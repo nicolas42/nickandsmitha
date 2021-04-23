@@ -69,8 +69,8 @@ if __name__ == "__main__":
     #plot the results
     pylab.figure()
     pylab.scatter(x_true[:,0],x_true[:,1],s=1, c='b',marker='o', edgecolors='b', label="true location")
-    # pylab.scatter(obs[:,0],   obs[:,1],   s=10,c='k',marker='+', edgecolors='k', label="measured loc")
-    # pylab.scatter(x_hat[0], x_hat[1], s=10,c='r',marker='s', edgecolors='r', label="estimated loc")
+    pylab.scatter(obs[:,0],   obs[:,1],   s=10,c='k',marker='+', edgecolors='k', label="measured loc")
+    pylab.scatter(x_hat[0], x_hat[1], s=10,c='r',marker='s', edgecolors='r', label="estimated loc")
     pylab.xlabel('x [m]')
     pylab.ylabel('y [m]')
     pylab.legend(loc=4)

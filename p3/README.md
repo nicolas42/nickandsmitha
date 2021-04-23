@@ -19,6 +19,9 @@ nrfutil pkg generate --hw-version 52 --sd-req=0x00 \
 nrfutil dfu usb-serial -pkg pkg.zip -p /dev/ttyACM0
 
 
+# python
+(run from base directory)
+python ../read_serial.py
 
 
 https://github.com/csiro-wsn/contiki-examples
@@ -120,4 +123,69 @@ my phone
 1A FF 4C 00 02 15 4C 19 CE E5 29 46 44 1E A4 4D 91 4E 4C 59 37 34 00 05 00 06 BF rssi < -70
 
 02 01 06 09 09 53 54 41 54 49 43 50 33 0D FF 01 83 20 30 40 50 60 70 00 00 00 00 device C3:DC:25:A7:9A:AB (random) (RSSI -76)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+struct output_data_t {
+	uint8_t  rssi;
+	uint8_t  distance;
+};
+
+static struct output_data_t output_data[4] = {
+	{
+		.rssi = 0x00,
+		.distance = 0x00,
+	}
+};
+
+uint32_t get_uuid(uint8_t *data)
+{
+	return (uint32_t)((0x00 << 24) || (data[6] << 16) || (data[7] << 8) || (data[8] << 0));
+}
+
+static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
+		    struct net_buf_simple *buf)
+{
+
+
+	uint32_t uuid = get_uuid(buf->data);
+
+	if (uuid == 0x00d48493 )
+
+
+
+
+	// if (buf->data[6] == 0xD4){
+	// 	output_data[0].rssi = rssi;
+	// }
+	// if (buf->data[6] == 0x4C){
+	// 	output_data[1].rssi = rssi;
+	// }
+	// if (buf->data[6] == 0x63){
+	// 	output_data[2].rssi = rssi;
+	// }
+	// if (buf->data[6] == 0x01){
+	// 	output_data[3].rssi = rssi;
+	// }
+
+
+	// int i=0;
+	// mfg_data[i++] = 0x63; // N 
+	// mfg_data[i++] = 0x73; // S
+	// mfg_data[i++] = 0x00; // 0
 

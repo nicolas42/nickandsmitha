@@ -1,123 +1,188 @@
 /* main.c - Application main entry point */
 
 /*
- * Copyright (c) 2019 Aaron Tsui <aaron.tsui@outlook.com>
+ * Copyright (c) 2015-2016 Intel Corporation
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
 #include <zephyr/types.h>
 #include <stddef.h>
-#include <string.h>
-#include <errno.h>
 #include <sys/printk.h>
-#include <sys/byteorder.h>
-#include <zephyr.h>
+#include <sys/util.h>
 
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
-#include <bluetooth/conn.h>
-#include <bluetooth/uuid.h>
-#include <bluetooth/gatt.h>
-#include <bluetooth/services/bas.h>
 
-#include "hts.h"
 
+
+// static uint8_t mfg_data[] = { 0x25, 0x92, 0xEE, 0xD6, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 };
+
+// static const struct bt_data ad[] = {
+// 	BT_DATA(BT_DATA_MANUFACTURER_DATA, mfg_data, 10),
+// };
+
+// static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
+// 		    struct net_buf_simple *buf)
+// {
+// 	mfg_data[4]++;
+// }
+
+
+
+
+
+// static uint8_t mfg_data[20] = { 0x00 };
+
+// static const struct bt_data ad[] = {
+// 	{
+// 		.type = 0xFF,
+// 		.data_len = 20,
+// 		.data = (const uint8_t *) mfg_data
+// 	}
+// };
+
+
+
+
+// static uint8_t mfg_data[] = { 0xff, 0xff, 0x00 };
+
+// static const struct bt_data ad[] = {
+// 	BT_DATA(BT_DATA_MANUFACTURER_DATA, mfg_data, 3),
+// };
+
+
+
+// #ifndef IBEACON_RSSI
+// #define IBEACON_RSSI 0xc8
+// #endif
+
+/*
+ * Set iBeacon demo advertisement data. These values are for
+ * demonstration only and must be changed for production environments!
+ *
+ * UUID:  18ee1516-016b-4bec-ad96-bcb96d166e97
+ * Major: 0
+ * Minor: 0
+ * RSSI:  -56 dBm
+ */
+// 1A FF 4C 00 02 15 D4 84 93 2C 33 A3 49 59 A5 65 F8 13 31 AA 26 FB FF FF 00 01 BF 
+
+
+// static uint8_t mfg_data[25] = { 0x00 };
+// static const struct bt_data ad[] = {
+// 	BT_DATA_BYTES(BT_DATA_FLAGS, BT_LE_AD_NO_BREDR),
+// 	BT_DATA(BT_DATA_MANUFACTURER_DATA, mfg_data, 25),
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+static uint8_t mfg_data[29] = { 0x00 };
+
+// 31 bytes max including 2 byte preamble
+// 0xFF means it's a manufacturer's message why not
 static const struct bt_data ad[] = {
-	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
-	BT_DATA_BYTES(BT_DATA_UUID16_ALL,
-		      BT_UUID_16_ENCODE(BT_UUID_HTS_VAL),
-		      BT_UUID_16_ENCODE(BT_UUID_DIS_VAL),
-		      BT_UUID_16_ENCODE(BT_UUID_BAS_VAL)),
+	{
+		.type = 0xFF,
+		.data_len = 29,
+		.data = (const uint8_t *) mfg_data
+	}
 };
 
-static void connected(struct bt_conn *conn, uint8_t err)
+int id_is_equal(uint8_t *data, uint8_t d6, uint8_t d7, uint8_t d8)
 {
-	if (err) {
-		printk("Connection failed (err 0x%02x)\n", err);
-	} else {
-		printk("Connected\n");
+	return (data[6] == d6) && (data[7] == d7) && (data[8] == d8);
+}
+
+
+static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
+		    struct net_buf_simple *buf)
+{
+
+	// marshall data 
+
+	mfg_data[0] = 0x63; // N 
+	mfg_data[1] = 0x73; // S
+	mfg_data[2] = 0x00; // 0
+	mfg_data[3] = 0x00; // 0
+
+	if (id_is_equal(buf->data, 0xD4,0x84,0x93)){
+		mfg_data[4] = 0xD4;
+		mfg_data[5] = rssi;
 	}
-}
-
-static void disconnected(struct bt_conn *conn, uint8_t reason)
-{
-	printk("Disconnected (reason 0x%02x)\n", reason);
-}
-
-static struct bt_conn_cb conn_callbacks = {
-	.connected = connected,
-	.disconnected = disconnected,
-};
-
-static void bt_ready(void)
-{
-	int err;
-
-	printk("Bluetooth initialized\n");
-
-	hts_init();
-
-	err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, ad, ARRAY_SIZE(ad), NULL, 0);
-	if (err) {
-		printk("Advertising failed to start (err %d)\n", err);
-		return;
+	if (id_is_equal(buf->data, 0x4c,0x19,0xce)){
+		mfg_data[6] = 0x4C;
+		mfg_data[7] = rssi;
 	}
-
-	printk("Advertising successfully started\n");
-}
-
-static void auth_cancel(struct bt_conn *conn)
-{
-	char addr[BT_ADDR_LE_STR_LEN];
-
-	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
-
-	printk("Pairing cancelled: %s\n", addr);
-}
-
-static struct bt_conn_auth_cb auth_cb_display = {
-	.cancel = auth_cancel,
-};
-
-static void bas_notify(void)
-{
-	uint8_t battery_level = bt_bas_get_battery_level();
-
-	battery_level--;
-
-	if (!battery_level) {
-		battery_level = 100U;
+	if (id_is_equal(buf->data, 0x63,0x73,0x01)){
+		mfg_data[8] = 0x01;
+		mfg_data[9] = rssi;
 	}
-
-	bt_bas_set_battery_level(battery_level);
+	if (id_is_equal(buf->data, 0x01,0xae,0x84)){
+		mfg_data[10] = 0x01;
+		mfg_data[11] = rssi;
+	}
 }
 
 void main(void)
 {
+	struct bt_le_scan_param scan_param = {
+		.type       = BT_HCI_LE_SCAN_PASSIVE,
+		.options    = BT_LE_SCAN_OPT_NONE,
+		.interval   = 0x0010,
+		.window     = 0x0010,
+	};
 	int err;
 
+	printk("Starting Scanner/Advertiser Demo\n");
+
+	/* Initialize the Bluetooth Subsystem */
 	err = bt_enable(NULL);
 	if (err) {
 		printk("Bluetooth init failed (err %d)\n", err);
 		return;
 	}
 
-	bt_ready();
+	printk("Bluetooth initialized\n");
 
-	bt_conn_cb_register(&conn_callbacks);
-	bt_conn_auth_cb_register(&auth_cb_display);
 
-	/* Implement indicate. At the moment there is no suitable way
-	 * of starting delayed work so we do it here
-	 */
-	while (1) {
-		k_sleep(K_SECONDS(1));
 
-		/* Temperature measurements simulation */
-		hts_indicate();
-
-		/* Battery level simulation */
-		bas_notify();
+	// scan for ads
+	err = bt_le_scan_start(&scan_param, scan_cb);
+	if (err) {
+		printk("Starting scanning failed (err %d)\n", err);
+		return;
 	}
+
+
+	// advertise
+	do {
+		k_sleep(K_MSEC(10));
+
+		/* Start advertising */
+		err = bt_le_adv_start(BT_LE_ADV_NCONN, ad, ARRAY_SIZE(ad),
+				      NULL, 0);
+		if (err) {
+			printk("Advertising failed to start (err %d)\n", err);
+			return;
+		}
+
+		k_sleep(K_MSEC(10));
+
+		err = bt_le_adv_stop();
+		if (err) {
+			printk("Advertising failed to stop (err %d)\n", err);
+			return;
+		}
+	} while (1);
+
 }

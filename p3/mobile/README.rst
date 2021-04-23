@@ -1,15 +1,16 @@
-.. _peripheral_ht:
+.. _bluetooth-scan-adv-sample:
 
-Bluetooth: Peripheral HT
-########################
+Bluetooth: Scan & Advertise
+###########################
 
 Overview
 ********
 
-Similar to the :ref:`Peripheral <ble_peripheral>` sample, except that this
-application specifically exposes the HT (Health Thermometer) GATT Service. Once a device
-connects it will generate dummy temperature values.
-
+A simple application demonstrating combined BLE Broadcaster & Observer
+role functionality. The application will periodically send out
+advertising packets with a manufacturer data element. The content of the
+data is a single byte indicating how many advertising packets the device
+has received (the number will roll back to 0 after 255).
 
 Requirements
 ************
@@ -20,7 +21,7 @@ Requirements
 Building and Running
 ********************
 
-This sample can be found under :zephyr_file:`samples/bluetooth/peripheral_ht` in the
+This sample can be found under :zephyr_file:`samples/bluetooth/scan_adv` in the
 Zephyr tree.
 
 See :ref:`bluetooth samples section <bluetooth-samples>` for details.

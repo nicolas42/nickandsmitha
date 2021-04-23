@@ -1,14 +1,16 @@
-.. _bluetooth_central_ht:
+.. _bluetooth_central:
 
-Bluetooth: Central / Health Thermometer sensor
-##############################################
+Bluetooth: Central
+##################
 
 Overview
 ********
 
-Similar to the :ref:`Central <bluetooth_central>` sample, except that this
-application specifically looks for health thermometer sensor and reports the
-die temperature readings once connected.
+Application demonstrating very basic BLE Central role functionality by scanning
+for other BLE devices and establishing a connection to the first one with a
+strong enough signal.
+
+
 
 Requirements
 ************
@@ -18,8 +20,7 @@ Requirements
 
 Building and Running
 ********************
-
-This sample can be found under :zephyr_file:`samples/bluetooth/central_ht` in the
+This sample can be found under :zephyr_file:`samples/bluetooth/central` in the
 Zephyr tree.
 
 See :ref:`bluetooth samples section <bluetooth-samples>` for details.

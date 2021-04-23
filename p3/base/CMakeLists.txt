@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.13.1)
-include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
-project(central_ht)
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(central)
 
-FILE(GLOB app_sources src/*.c)
-target_sources(app PRIVATE ${app_sources})
+target_sources(app PRIVATE
+  src/main.c
+)
 
-zephyr_library_include_directories($ENV{ZEPHYR_BASE}/samples/bluetooth)
+zephyr_library_include_directories(${ZEPHYR_BASE}/samples/bluetooth)
