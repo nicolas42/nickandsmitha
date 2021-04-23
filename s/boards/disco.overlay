@@ -1,0 +1,16 @@
+&spi1 {
+	pinctrl-0 = <&spi1_sck_pa5 &spi1_miso_pa6 &spi1_mosi_pa7 &spi1_nss_pa2>;
+	status = "okay";
+};			
+
+// sensors {
+
+//         us0: hc-sr04 {
+//             compatible = "arduino,hc-sr04";
+//             label = "HC-SR04_0";
+//             trig-gpios = <&gpioa 4 GPIO_ACTIVE_HIGH>;
+//             echo-gpios = <&gpiob 2  GPIO_ACTIVE_HIGH>;
+//             status = "okay";
+//         };
+// };
+
