@@ -98,9 +98,9 @@ static const struct bt_data ad[] = {
 	}
 };
 
-int id_is_equal(uint8_t *data, uint8_t d6, uint8_t d7, uint8_t d8)
+int id_is_equal(uint8_t *data, uint8_t d6, uint8_t d7, uint8_t d8, uint8_t d9)
 {
-	return (data[6] == d6) && (data[7] == d7) && (data[8] == d8);
+	return (data[6] == d6) && (data[7] == d7) && (data[8] == d8) && (data[9] == d9);
 }
 
 
@@ -116,22 +116,22 @@ static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 	mfg_data[3] = 0x00; // 0
 
 	// NS1
-	if (id_is_equal(buf->data, 0x63,0x73,0x01)){
+	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x01)){
 		mfg_data[4] = rssi;
 		mfg_data[5] = buf->data[9];
 	}
 	// NS2
-	if (id_is_equal(buf->data, 0x63,0x73,0x02)){
+	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x02)){
 		mfg_data[6] = rssi;
 		mfg_data[7] = buf->data[9];
 	}
 	// NS3
-	if (id_is_equal(buf->data, 0x63,0x73,0x03)){
+	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x03)){
 		mfg_data[8] = rssi;
 		mfg_data[9] = 0x00;
 	}
 	// NS4
-	if (id_is_equal(buf->data, 0x63,0x73,0x04)){
+	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x04)){
 		mfg_data[10] = rssi;
 		mfg_data[11] = 0x00;
 	}

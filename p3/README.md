@@ -43,6 +43,61 @@ go to static directory
 rm -rf build; west build -b particle_argon; echo "1" | west flash
 
 
+# Protocol
+
+Messages encodings are based on the ibeacon format in so far as the uuid offset begins at the same place.  This allows for ibeacon messages to also be used in this system as long as they have an appropriate uuid.
+
+We use the first 4 bytes of an ibeacon uuid to identify and filter messages.  This corresponds to index number 6-9 of the message.
+
+After the 4 byte identifier another byte may be sent which specifies the ultrasound distance measurement (in centimeters).
+
+static message format
+
+unspecified (6 bytes), 
+id 			(4 bytes) - NS01..NS04
+distance 	(1 byte)  - optional
+
+Currently the mobile device is encoded as NS00 and the four static nodes are encoded as NS01, NS02, NS03, and NS04.  
+
+Their positions are 
+
+NS01 .... NS02
+...  NS00
+NS04 .... NS03
+
+
+The mobile node advertises packets in the following format
+
+unspecified (6 bytes), 
+id 			(4 bytes) - NS00
+rssi1		(1 byte)
+distance1	(1 byte)
+rssi2		(1 byte)
+distance2	(1 byte)
+rssi3		(1 byte)
+unspecified	(1 byte)
+rssi4		(1 byte)
+unspecified	(1 byte)
+
+where rssi1 is the rssi information for the static1 node to the mobile node message and so on.
+
+rssi values are signed integers whereas distance values are unsigned integers.
+
+The static node receives messages with this id and prints the information into a serial port in json format
+
+[[rssi1, distance1],[rssi2, distance2 ],[rssi3, _ ],[rssi4, _ ]
+
+This is read line by line by our python script which then converts the rssi information into distance information using the following equation.
+
+
+dist = 10**((ref - rssi) /10*N))
+
+As of writing this we assuming N=2 and rssi=-65
+
+
+
+
+
 
 
 
@@ -206,10 +261,3 @@ static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 
 
 
-# To Do
-
-get the mobile node to transceive the ultrasound and rssi values
-
-so the mobile's outgoing message will be of the form
-
-header, ns1 (smitha), ns2 (mine), static 3, static 4 [][][][]
