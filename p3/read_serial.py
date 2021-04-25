@@ -1,6 +1,10 @@
 import serial
 import json
 
+import matplotlib.pyplot as plt
+plt.axis([0, 4, 0, 4])
+
+show_gui = False
 
 def do_least_squares_thing_please(r1,r2,r3,r4):
 
@@ -67,11 +71,12 @@ while True:
             # print(json.dumps(j, sort_keys=True, indent=4))
             print(json.dumps(j))            
         except:
-            pass
             # print("bad json", line, end="")
+            pass
+
+
 
         try:
-
 
             # [[rssi1, distance1],[rssi2, distance2 ],[rssi3, _ ],[rssi4, _ ]
             # This is read line by line by our python script which then converts the rssi information into distance information using the following equation.
@@ -101,6 +106,9 @@ while True:
             #     r2 = float(distance2) / 100
 
 
+
+
+
             location = do_least_squares_thing_please(r1,r2,r3,r4)
             # print(location)
             # location should be within (0..4,0..4) so we can bound it at the edges
@@ -118,6 +126,14 @@ while True:
 
 
 
+            if show_gui:
+                plt.scatter(x0, y0)
+                plt.pause(0.05)
+                # Call plt.pause(0.05) to both draw the new data and it runs the GUI's event loop (allowing for mouse interaction).
+                # plt.show()
+
+
+
             # then we can use the distance values from the US sensors in preference to the rssi values if the US distance values
             # are below 100 (cm).
 
@@ -127,4 +143,5 @@ while True:
     except:
         print("Keyboard Interrupt")
         break
-    
+
+

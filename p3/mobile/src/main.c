@@ -118,12 +118,12 @@ static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 	// NS1
 	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x01)){
 		mfg_data[4] = rssi;
-		mfg_data[5] = buf->data[9];
+		mfg_data[5] = buf->data[10];
 	}
 	// NS2
 	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x02)){
 		mfg_data[6] = rssi;
-		mfg_data[7] = buf->data[9];
+		mfg_data[7] = buf->data[10];
 	}
 	// NS3
 	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x03)){

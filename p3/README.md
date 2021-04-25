@@ -65,6 +65,7 @@ NS01 .... NS02
 ...  NS00
 NS04 .... NS03
 
+NS01 is nyssa's argon and NS02 is mine.
 
 The mobile node advertises packets in the following format
 
