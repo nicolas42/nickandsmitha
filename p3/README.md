@@ -10,6 +10,7 @@ nrf52840dongle_nrf52840
 from https://docs.zephyrproject.org/latest/boards/arm/nrf52840dongle_nrf52840/doc/index.html
 
 
+go to base directory
 
 rm -rf build; west build -b nrf52840dongle_nrf52840 && \
 \
@@ -20,7 +21,8 @@ nrfutil dfu usb-serial -pkg pkg.zip -p /dev/ttyACM0
 
 
 # python
-(run from base directory)
+run from within the base directory
+
 python ../read_serial.py
 
 
@@ -29,7 +31,19 @@ https://github.com/csiro-wsn/contiki-examples
 
 # flash mobile (thingy)
 
+go to mobile directory
+
 rm -rf build; west build -b thingy52_nrf52832; west flash
+
+
+# flash static (argon)
+
+go to static directory
+
+rm -rf build; west build -b particle_argon; echo "1" | west flash
+
+
+
 
 
 
@@ -189,3 +203,13 @@ static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 	// mfg_data[i++] = 0x73; // S
 	// mfg_data[i++] = 0x00; // 0
 
+
+
+
+# To Do
+
+get the mobile node to transceive the ultrasound and rssi values
+
+so the mobile's outgoing message will be of the form
+
+header, ns1 (smitha), ns2 (mine), static 3, static 4 [][][][]

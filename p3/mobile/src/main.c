@@ -115,21 +115,25 @@ static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 	mfg_data[2] = 0x00; // 0
 	mfg_data[3] = 0x00; // 0
 
-	if (id_is_equal(buf->data, 0xD4,0x84,0x93)){
-		mfg_data[4] = 0xD4;
-		mfg_data[5] = rssi;
-	}
-	if (id_is_equal(buf->data, 0x4c,0x19,0xce)){
-		mfg_data[6] = 0x4C;
-		mfg_data[7] = rssi;
-	}
+	// NS1
 	if (id_is_equal(buf->data, 0x63,0x73,0x01)){
-		mfg_data[8] = 0x01;
-		mfg_data[9] = rssi;
+		mfg_data[4] = rssi;
+		mfg_data[5] = buf->data[9];
 	}
-	if (id_is_equal(buf->data, 0x01,0xae,0x84)){
-		mfg_data[10] = 0x01;
-		mfg_data[11] = rssi;
+	// NS2
+	if (id_is_equal(buf->data, 0x63,0x73,0x02)){
+		mfg_data[6] = rssi;
+		mfg_data[7] = buf->data[9];
+	}
+	// NS3
+	if (id_is_equal(buf->data, 0x63,0x73,0x03)){
+		mfg_data[8] = rssi;
+		mfg_data[9] = 0x00;
+	}
+	// NS4
+	if (id_is_equal(buf->data, 0x63,0x73,0x04)){
+		mfg_data[10] = rssi;
+		mfg_data[11] = 0x00;
 	}
 }
 

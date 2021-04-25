@@ -73,11 +73,11 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 		// }
 
 		// output json to serial
-		printk("[[%u,%d],[%u,%d],[%u,%d],[%u,%d]]\n", 
-		ad->data[6], (int8_t)ad->data[7], 
-		ad->data[8], (int8_t)ad->data[9], 
-		ad->data[10], (int8_t)ad->data[11],
-		ad->data[12], (int8_t)ad->data[13]);
+		printk("[[%d,%u],[%d,%u],[%d,%u],[%d,%u]]\n", 
+		(int8_t)ad->data[6], (uint8_t)ad->data[7], 
+		(int8_t)ad->data[8], (uint8_t)ad->data[9], 
+		(int8_t)ad->data[10], (uint8_t)ad->data[11],
+		(int8_t)ad->data[12], (uint8_t)ad->data[13]);
 
 	}
 

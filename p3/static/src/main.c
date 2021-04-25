@@ -109,9 +109,9 @@ void main(void)
 
 	bt_id_get(&addr, &count);
 	bt_addr_le_to_str(&addr, addr_s, sizeof(addr_s));
-    // while(1) {
-	// printk("StaticP3 started, advertising as %s\n", addr_s);
-	// k_msleep(100);
-	// }
+    while(1) {
+	printk("StaticP3 started, advertising as %s\n", addr_s);
+	k_msleep(100);
+	}
 
 }
