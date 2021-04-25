@@ -92,7 +92,7 @@ This is read line by line by our python script which then converts the rssi info
 
 dist = 10**((ref - rssi) /10*N))
 
-As of writing this we assuming N=2 and rssi=-65
+As of writing this we assuming N=2 and ref=-65
 
 
 
