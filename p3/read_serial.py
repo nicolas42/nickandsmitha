@@ -97,7 +97,7 @@ while True:
         # print(line)
         try:
             j = json.loads(line)
-            # print(json.dumps(j))            
+            print(json.dumps(j))            
         except:
             # print("bad json", line, end="")
             pass
@@ -125,13 +125,13 @@ while True:
             r4 = 10**( (ref_rssi - rssi4) / (10*N) )
 
 
-            # # Ultrasound distance sensor measurements take priority within 1m range
-            # distance1 = j[0][1]
-            # distance2 = j[1][1]
-            # if distance1 < 100:
-            #     r1 = float(distance1) / 100
-            # if distance2 < 100:
-            #     r2 = float(distance2) / 100
+            # Ultrasound distance sensor measurements take priority within 1m range
+            distance1 = j[0][1]
+            distance2 = j[1][1]
+            if (0 < distance1) and (distance1 < 100):
+                r1 = float(distance1) / 100
+            if (0 < distance2) and (distance2 < 100):
+                r2 = float(distance2) / 100
 
 
             r1s.append(r1)
