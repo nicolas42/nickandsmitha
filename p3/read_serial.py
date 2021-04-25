@@ -1,12 +1,10 @@
 import serial
 import json
 
-import matplotlib.pyplot as plt
-plt.axis([0, 4, 0, 4])
+nsamples = 10
+show_gui = True
 
-show_gui = False
-
-def do_least_squares_thing_please(r1,r2,r3,r4):
+def do_least_squares_approximation(r1,r2,r3,r4):
 
 
     # # Approximate the position of the mobile device
@@ -57,19 +55,49 @@ def do_least_squares_thing_please(r1,r2,r3,r4):
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
 
+def average(lst):
+    return sum(lst) / len(lst)
+
+
+
+
+
+
+
 
 ser = serial.Serial('/dev/ttyACM0')
 ser.flushInput()
 
+x0s = []
+y0s = []
+r1s = []
+r2s = []
+r3s = []
+r4s = []
+
+
+if show_gui:
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    plt.ion()
+    fig, ax = plt.subplots()
+    sc = ax.scatter(x0s,y0s)
+    plt.xlim(0,10)
+    plt.ylim(0,10)
+    plt.draw()
+
+
 while True:
+    ser.flushInput()
+
     try:
         ser_bytes = ser.readline()
         line = ser_bytes.decode("utf-8")
         # print(line)
         try:
             j = json.loads(line)
-            # print(json.dumps(j, sort_keys=True, indent=4))
-            print(json.dumps(j))            
+            # print(json.dumps(j))            
         except:
             # print("bad json", line, end="")
             pass
@@ -87,17 +115,17 @@ while True:
             rssi4 = j[3][0]
 
             # dist = 10**((ref - rssi) /10*N))
-            # As of writing this we assuming N=2 and ref=-65
+            # As of writing this we assuming N=2 and ref_rssi=-65
 
             N=2
-            ref=-65
-            r1 = 10**( (ref - rssi1) / (10*N) )
-            r2 = 10**( (ref - rssi2) / (10*N) )
-            r3 = 10**( (ref - rssi3) / (10*N) )
-            r4 = 10**( (ref - rssi4) / (10*N) )
+            ref_rssi=-61
+            r1 = 10**( (ref_rssi - rssi1) / (10*N) )
+            r2 = 10**( (ref_rssi - rssi2) / (10*N) )
+            r3 = 10**( (ref_rssi - rssi3) / (10*N) )
+            r4 = 10**( (ref_rssi - rssi4) / (10*N) )
 
 
-            # # US Distance sensor measurements take priority within 1m range
+            # # Ultrasound distance sensor measurements take priority within 1m range
             # distance1 = j[0][1]
             # distance2 = j[1][1]
             # if distance1 < 100:
@@ -106,37 +134,53 @@ while True:
             #     r2 = float(distance2) / 100
 
 
+            r1s.append(r1)
+            r2s.append(r2)
+            r3s.append(r3)
+            r4s.append(r4)
 
+            # print(r1,r2,r3,r4)
+            print(round(average(r1s[-nsamples:]),2), round(average(r2s[-nsamples:]),2), round(average(r3s[-nsamples:]),2), round(average(r4s[-nsamples:]),2))
 
-
-            location = do_least_squares_thing_please(r1,r2,r3,r4)
-            # print(location)
-            # location should be within (0..4,0..4) so we can bound it at the edges
-            # example format
-            # [[ 2.00524551]
-            # [-5.87647575]]
+            # location = do_least_squares_approximation(r1,r2,r3,r4)
+            location = do_least_squares_approximation(average(r1s[-nsamples:]),average(r2s[-nsamples:]),average(r3s[-nsamples:]),average(r4s[-nsamples:]))
 
             x0 = location[0][0]
             y0 = location[1][0]
 
-            x0 = clamp( x0, 0, 4)
-            y0 = clamp( y0, 0, 4)
+            x0s.append(x0)
+            y0s.append(y0)
+
+            # x0 = clamp( x0, 0, 4)
+            # y0 = clamp( y0, 0, 4)
 
             print(x0,y0)
 
-
-
             if show_gui:
-                plt.scatter(x0, y0)
-                plt.pause(0.05)
-                # Call plt.pause(0.05) to both draw the new data and it runs the GUI's event loop (allowing for mouse interaction).
-                # plt.show()
+                sc.set_offsets(np.c_[x0s,y0s])
+                fig.canvas.draw_idle()
+                plt.pause(0.01)
+
+
+            # if show_gui:
+            #     plt.scatter(x0, y0)
+            #     plt.pause(0.05)
+            #     # Call plt.pause(0.05) to both draw the new data and it runs the GUI's event loop (allowing for mouse interaction).
+            #     # plt.show()
 
 
 
             # then we can use the distance values from the US sensors in preference to the rssi values if the US distance values
             # are below 100 (cm).
 
+
+            # "garbage collection"
+            x0s = x0s[-nsamples:]
+            y0s = y0s[-nsamples:]
+            r1s = r1s[-nsamples:]
+            r2s = r2s[-nsamples:]
+            r3s = r3s[-nsamples:]
+            r4s = r4s[-nsamples:]
         except:
             pass
 

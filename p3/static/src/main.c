@@ -44,7 +44,7 @@ static uint8_t manuf_data[ADV_LEN] = {
 	0x63 /* GROUP B Feature */,
 	0x73 /* GROUP B Feature */,
 	0x00, /* BLE MAC start -MSB */
-	0x02,
+	0x04,
 	0x00,
 	0x00,
 	0x00,
