@@ -63,7 +63,7 @@ static uint8_t sensor_data[ADV_LEN] = {
 	0x63 /* GROUP B Feature */,
 	0x73 /* GROUP B Feature */,
 	0x00, /* BLE MAC start -MSB */
-	0x03,
+	0x01,
 	0x00,
 	0x00,
 	0x00,
@@ -290,4 +290,5 @@ void os_hci_init() {
         printk("ERROR spawning RX thread\n");
         return;
     }
+    
 }

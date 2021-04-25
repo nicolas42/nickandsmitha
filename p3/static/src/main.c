@@ -44,7 +44,7 @@ static uint8_t manuf_data[ADV_LEN] = {
 	0x63 /* GROUP B Feature */,
 	0x73 /* GROUP B Feature */,
 	0x00, /* BLE MAC start -MSB */
-	0x04,
+	0x01,
 	0x00,
 	0x00,
 	0x00,
@@ -109,9 +109,20 @@ void main(void)
 
 	bt_id_get(&addr, &count);
 	bt_addr_le_to_str(&addr, addr_s, sizeof(addr_s));
+
+	struct hci_packet cmd_pkt;
+    cmd_pkt.preamble = 0xAA;
+    cmd_pkt.tt = REQUEST;
+    cmd_pkt.payload_length = 4;
+    cmd_pkt.payload.sid = HCSR04;
+    cmd_pkt.payload.i2c_addr_rw_bit = 0xff;
     while(1) {
-	printk("StaticP3 started, advertising as %s\n", addr_s);
-	k_msleep(100);
-	}
+    os_process_hci_packet(cmd_pkt);
+    k_msleep(500);
+    }
+    // while(1) {
+	// printk("StaticP3 started, advertising as %s\n", addr_s);
+	// k_msleep(100);
+	// }
 
 }
