@@ -44,7 +44,7 @@ static uint8_t manuf_data[ADV_LEN] = {
 	0x63 /* GROUP B Feature */,
 	0x73 /* GROUP B Feature */,
 	0x00, /* BLE MAC start -MSB */
-	0x03,
+	0x04,
 	0x00,
 	0x00,
 	0x00,
@@ -73,23 +73,23 @@ void main(void)
 
     /* Initialise the USB driver */
 	/* Check if device is available and accessible */
-//	dev = device_get_binding("CDC_ACM_0");
-//
-//	if (!dev) {
-//
-//		printk("USB device not found");
-//		return;
-//	}
-//
-//    /* Enable the usb device */
-//	ret = usb_enable(NULL);
-//
-//	if (ret != 0) {
-//		printk("Failed to enable USB");
-//		return;
-//	}
+	dev = device_get_binding("CDC_ACM_0");
 
- //       os_hci_init();
+	if (!dev) {
+
+		printk("USB device not found");
+		return;
+	}
+
+    /* Enable the usb device */
+	ret = usb_enable(NULL);
+
+	if (ret != 0) {
+		printk("Failed to enable USB");
+		return;
+	}
+
+       // os_hci_init();
     
         int err = bt_enable(NULL);
         	if (err) {
