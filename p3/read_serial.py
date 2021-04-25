@@ -2,28 +2,7 @@ import serial
 import json
 
 
-def do_least_squares_thing_please():
-
-    # [[rssi1, distance1],[rssi2, distance2 ],[rssi3, _ ],[rssi4, _ ]
-    # This is read line by line by our python script which then converts the rssi information into distance information using the following equation.
-
-    rssi1 = j[0][0]
-    rssi2 = j[1][0]
-    rssi3 = j[2][0]
-    rssi4 = j[3][0]
-
-    distance1 = j[0][1]
-    distance2 = j[1][1]
-
-    # dist = 10**((ref - rssi) /10*N))
-    # As of writing this we assuming N=2 and ref=-65
-
-    N=2
-    ref=-65
-    r1 = 10**( (ref - rssi1) / (10*N) )
-    r2 = 10**( (ref - rssi2) / (10*N) )
-    r3 = 10**( (ref - rssi3) / (10*N) )
-    r4 = 10**( (ref - rssi4) / (10*N) )
+def do_least_squares_thing_please(r1,r2,r3,r4):
 
 
     # # Approximate the position of the mobile device
@@ -71,6 +50,9 @@ def do_least_squares_thing_please():
 
 
 
+def clamp(n, minn, maxn):
+    return max(min(maxn, n), minn)
+
 
 ser = serial.Serial('/dev/ttyACM0')
 ser.flushInput()
@@ -89,13 +71,56 @@ while True:
             # print("bad json", line, end="")
 
         try:
-            location = do_least_squares_thing_please()
-            print(location)
+
+
+            # [[rssi1, distance1],[rssi2, distance2 ],[rssi3, _ ],[rssi4, _ ]
+            # This is read line by line by our python script which then converts the rssi information into distance information using the following equation.
+
+            rssi1 = j[0][0]
+            rssi2 = j[1][0]
+            rssi3 = j[2][0]
+            rssi4 = j[3][0]
+
+            # dist = 10**((ref - rssi) /10*N))
+            # As of writing this we assuming N=2 and ref=-65
+
+            N=2
+            ref=-65
+            r1 = 10**( (ref - rssi1) / (10*N) )
+            r2 = 10**( (ref - rssi2) / (10*N) )
+            r3 = 10**( (ref - rssi3) / (10*N) )
+            r4 = 10**( (ref - rssi4) / (10*N) )
+
+
+            # # US Distance sensor measurements take priority within 1m range
+            # distance1 = j[0][1]
+            # distance2 = j[1][1]
+            # if distance1 < 100:
+            #     r1 = float(distance1) / 100
+            # if distance2 < 100:
+            #     r2 = float(distance2) / 100
+
+
+            location = do_least_squares_thing_please(r1,r2,r3,r4)
+            # print(location)
             # location should be within (0..4,0..4) so we can bound it at the edges
+            # example format
+            # [[ 2.00524551]
+            # [-5.87647575]]
+
+            x0 = location[0][0]
+            y0 = location[1][0]
+
+            x0 = clamp( x0, 0, 4)
+            y0 = clamp( y0, 0, 4)
+
+            print(x0,y0)
+
+
 
             # then we can use the distance values from the US sensors in preference to the rssi values if the US distance values
             # are below 100 (cm).
-            
+
         except:
             pass
 
