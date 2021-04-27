@@ -6,9 +6,7 @@ from numpy.linalg import inv
 
 
 nsamples = 10
-show_gui = True
-d_sensor = np.array([1,1,2,2])
-d_rssi = np.array([2,3,4,5])
+show_gui = False 
 
 def do_least_squares_approximation(r1,r2,r3,r4):
 
@@ -71,51 +69,50 @@ def covariance2d(sigma1, sigma2):
     return np.diag(np.diag(cov_matrix))
 
 def prediction(x, p, q, f):
-    X_prime = x.dot(f)
+    X_prime = f.dot(x) 
     P_prime = f.dot(p).dot(f.T) + q
     return X_prime, P_prime
 
 def update(X, P, y, R, H):
     Inn = y - H.dot(X)
     S =  H.dot(P).dot(H.T) + R
-    K = P.dot(H).dot(inv(S))
-
+    K = P.dot(H.T).dot(inv(S))
     X = X + K.dot(Inn)
     P = P - K.dot(H).dot(P)
     return X, P
 
-def kalman_calc(d_sensor, d_rssi):
+def kalman_calc(s1,s2,r1,r2,r3,r4):
     t = 0.01  # Difference in time
 
     F = np.array([[1, t], 
                   [0, 1]])
 
     # observation matrix 
-    H = [1, 0];
+    H = np.array([[1, 0]]);
     
     # system noise
     Q = np.array([[0.05, 0],
                   [0, 1]])
 
     # Process / Estimation Errors
-    error_est_x = 20
-    error_est_xdot = 2
+    error_est_x = 10
+    error_est_xdot = 1 
     
     # Observation Errors
-    error_obs_x = 20  # Uncertainty in the measurement
+    error_obs_x = 10  # Uncertainty in the measurement
     error_obs_xdot = 1
 
     # initial state and covariance matrix
-    X = np.array([[d_sensor[0],0]])
+    X = np.array([[s1],[0]])
     P = covariance2d(error_est_xdot, error_est_x) 
-    
-    for i in range(4):
-   #     print("in Kalman")
-        X, P = prediction(X, P, Q, F)
-        X, P = update(X, P, d_sensor[i], error_obs_xdot, H)
-        X, P = update(X, P, d_rssi[i], error_obs_x, H)
-         
-   # print(X)    
+
+    X, P = prediction(X, P, Q, F)
+    X, P = update(X, P, s1, error_obs_xdot, H)
+    X, P = update(X, P, s2, error_obs_xdot, H)
+    X, P = update(X, P, r1, error_obs_x, H)
+    X, P = update(X, P, r2, error_obs_x, H)
+    X, P = update(X, P, r3, error_obs_x, H)
+    X, P = update(X, P, r4, error_obs_x, H)
     return X
                  
 
@@ -128,17 +125,25 @@ r1s = []
 r2s = []
 r3s = []
 r4s = []
-
+r1 = 0
+st_matrix = np.array([[0],[0]])
 
 if show_gui:
     import matplotlib.pyplot as plt
     import numpy as np
 
     plt.ion()
-    fig, ax = plt.subplots()
-    sc = ax.scatter(x0s,y0s)
-    plt.xlim(0,10)
-    plt.ylim(0,10)
+    fig, ax = plt.subplots(2)
+    sc = ax[0].scatter(x0s,y0s)
+    sc1 = ax[1].scatter(st_matrix[0][0], r1)
+    ax[0].set_xlim(0,10)
+    ax[0].set_ylim(0,10)
+    ax[0].set_title("Multilateration coordinates")
+    ax[1].set_xlim(0,200)
+    ax[1].set_ylim(0,200)
+    ax[1].set_title("Kalman output distance")
+#    plt.xlim(0,200)
+#    plt.ylim(0,200)
     plt.draw()
 
 
@@ -148,10 +153,10 @@ while True:
     try:
         ser_bytes = ser.readline()
         line = ser_bytes.decode("utf-8")
-        # print(line)
+        #print(line)
         try:
             j = json.loads(line)
-            print(json.dumps(j))            
+          #  print(json.dumps(j))            
         except:
             # print("bad json", line, end="")
             pass
@@ -185,9 +190,6 @@ while True:
             d_rssi = ([r1, r2, r3, r4])
             d_sensor = ([distance1, distance2, 0, 0])
 
-            #for testing
-#            d_sensor = np.array([2,3,4,5])
-#            d_rssi = np.array([2,3,4,5])
             if (0 < distance1) and (distance1 < 100):
                 r1 = float(distance1) / 100
             if (0 < distance2) and (distance2 < 100):
@@ -199,8 +201,8 @@ while True:
             r3s.append(r3)
             r4s.append(r4)
 
-            # print(r1,r2,r3,r4)
-           # print(round(average(r1s[-nsamples:]),2), round(average(r2s[-nsamples:]),2), round(average(r3s[-nsamples:]),2), round(average(r4s[-nsamples:]),2))
+           # print(r1,r2,r3,r4)
+            print(round(average(r1s[-nsamples:]),2), round(average(r2s[-nsamples:]),2), round(average(r3s[-nsamples:]),2), round(average(r4s[-nsamples:]),2))
 
             # location = do_least_squares_approximation(r1,r2,r3,r4)
             location = do_least_squares_approximation(average(r1s[-nsamples:]),average(r2s[-nsamples:]),average(r3s[-nsamples:]),average(r4s[-nsamples:]))
@@ -214,13 +216,13 @@ while True:
             # x0 = clamp( x0, 0, 4)
             # y0 = clamp( y0, 0, 4)
 
-          #  print(x0,y0)
-
-            st_matrix = kalman_calc(d_sensor, d_rssi)
-            #print ("kalman:\n",st_matrix)
+           # print(x0,y0)
+            st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
+            print (st_matrix)
 
             if show_gui:
                 sc.set_offsets(np.c_[x0s,y0s])
+                sc1.set_offsets(np.c_[st_matrix[0][0],r1])
                 fig.canvas.draw_idle()
                 plt.pause(0.01)
 
