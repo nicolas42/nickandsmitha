@@ -6,7 +6,7 @@ from numpy.linalg import inv
 
 
 nsamples = 10
-show_gui = False 
+show_gui = True 
 
 def do_least_squares_approximation(r1,r2,r3,r4):
 
@@ -116,7 +116,13 @@ def kalman_calc(s1,s2,r1,r2,r3,r4):
     return X
                  
 
-ser = serial.Serial('/dev/ttyACM0')
+import sys
+serial_port = '/dev/ttyACM0'
+print(sys.argv)
+if len(sys.argv) == 2:
+    serial_port = sys.argv[1]
+ 
+ser = serial.Serial(serial_port)
 ser.flushInput()
 
 x0s = []
@@ -135,7 +141,7 @@ if show_gui:
     plt.ion()
     fig, ax = plt.subplots(2)
     sc = ax[0].scatter(x0s,y0s)
-    sc1 = ax[1].scatter(st_matrix[0][0], r1)
+    sc1 = ax[1].scatter(st_matrix[0][0], r1, c='red')
     ax[0].set_xlim(0,10)
     ax[0].set_ylim(0,10)
     ax[0].set_title("Multilateration coordinates")
@@ -190,9 +196,10 @@ while True:
             d_rssi = ([r1, r2, r3, r4])
             d_sensor = ([distance1, distance2, 0, 0])
 
-            if (0 < distance1) and (distance1 < 100):
+            # fusion
+            if (0 < distance1) and (distance1 < 50):
                 r1 = float(distance1) / 100
-            if (0 < distance2) and (distance2 < 100):
+            if (0 < distance2) and (distance2 < 50):
                 r2 = float(distance2) / 100
 
 
@@ -221,6 +228,9 @@ while True:
             print (st_matrix)
 
             if show_gui:
+                ax[0].set_title("Multilateration coordinates: " + str(round(x0,2)) + " " + str(round(y0,2)) )
+                ax[1].set_title("Kalman output distance: " + str(round(st_matrix[0][0],2)))
+
                 sc.set_offsets(np.c_[x0s,y0s])
                 sc1.set_offsets(np.c_[st_matrix[0][0],r1])
                 fig.canvas.draw_idle()
@@ -252,6 +262,6 @@ while True:
     except:
         print("Keyboard Interrupt")
         break
-    time.sleep(0.01)
+    # time.sleep(0.01)
 
 
