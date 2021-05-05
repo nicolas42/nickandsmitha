@@ -136,11 +136,11 @@ static void start_scan(void)
 	/* This demo doesn't require active scan */
 	err = bt_le_scan_start(BT_LE_SCAN_ACTIVE, device_found);
 	if (err) {
-		printk("Scanning failed to start (err %d)\n", err);
+		// printk("Scanning failed to start (err %d)\n", err);
 		return;
 	}
 
-	printk("Scanning successfully started\n");
+	// printk("Scanning successfully started\n");
 }
 
 static void connected(struct bt_conn *conn, uint8_t err)
