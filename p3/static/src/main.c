@@ -44,8 +44,8 @@ static uint8_t manuf_data[ADV_LEN] = {
 	0x63 /* GROUP B Feature */,
 	0x73 /* GROUP B Feature */,
 	0x00, /* BLE MAC start -MSB */
-	0x01,
-	0x00,
+	0x02, // ID 
+	0x00, // US distance (cm)
 	0x00,
 	0x00,
 	0x00 /* BLE MAC stop */

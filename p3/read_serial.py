@@ -5,8 +5,8 @@ import numpy as np
 from numpy.linalg import inv
 
 
-nsamples = 10
-show_gui = True 
+nsamples = 50
+show_gui = False 
 
 def do_least_squares_approximation(r1,r2,r3,r4):
 
@@ -154,12 +154,12 @@ if show_gui:
 
 
 while True:
-    ser.flushInput()
+    # ser.flushInput()
 
     try:
         ser_bytes = ser.readline()
         line = ser_bytes.decode("utf-8")
-        #print(line)
+        print(line)
         try:
             j = json.loads(line)
           #  print(json.dumps(j))            

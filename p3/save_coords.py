@@ -69,7 +69,7 @@ while True:
 
 
     new_data = {
-        "true_coords": [true_x, true_y], 
+        "true_coords": [float(true_x), float(true_y)], 
         "rssi_values": [ rssi1, rssi2, rssi3, rssi4 ]
     }
 

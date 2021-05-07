@@ -135,6 +135,28 @@ static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 		mfg_data[10] = rssi;
 		mfg_data[11] = 0x00;
 	}
+	// NS5
+	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x05)){
+		mfg_data[12] = rssi;
+		mfg_data[13] = 0x00;
+	}
+	// NS6
+	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x06)){
+		mfg_data[14] = rssi;
+		mfg_data[15] = 0x00;
+	}
+	// NS7
+	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x07)){
+		mfg_data[16] = rssi;
+		mfg_data[17] = 0x00;
+	}
+	// NS8
+	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x08)){
+		mfg_data[18] = rssi;
+		mfg_data[19] = 0x00;
+	}
+
+
 }
 
 void main(void)
