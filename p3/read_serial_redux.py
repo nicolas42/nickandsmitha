@@ -5,7 +5,7 @@ import numpy as np
 from numpy.linalg import inv
 
 
-nsamples = 10
+nsamples = 50
 show_gui = False 
 
 def do_least_squares_approximation(r1,r2,r3,r4):
@@ -127,10 +127,22 @@ ser.flushInput()
 
 x0s = []
 y0s = []
+
 r1s = []
 r2s = []
 r3s = []
 r4s = []
+
+rssi1s = []
+rssi2s = []
+rssi3s = []
+rssi4s = []
+rssi5s = []
+rssi6s = []
+rssi7s = []
+rssi8s = []
+
+
 r1 = 0
 st_matrix = np.array([[0],[0]])
 
@@ -154,11 +166,19 @@ if show_gui:
 
 
 while True:
-    # ser.flushInput()
 
-    ser_bytes = ser.readline()
+
+    # print("reading serial")
+
+    try:
+        ser_bytes = ser.readline()
+    except:
+            ser.flushInput()
+
+    # print("serial read")
+
     line = ser_bytes.decode("utf-8")
-    print(line)
+    print(line, end="")
     try:
         j = json.loads(line)
         #  print(json.dumps(j))            
@@ -174,63 +194,76 @@ while True:
     rssi2 = j[1][0]
     rssi3 = j[2][0]
     rssi4 = j[3][0]
+    rssi5 = j[4][0]
+    rssi6 = j[5][0]
+    rssi7 = j[6][0]
+    rssi8 = j[7][0]
 
     # dist = 10**((ref - rssi) /10*N))
     # As of writing this we assuming N=2 and ref_rssi=-65
 
-    N=2
-    ref_rssi=-61
-    r1 = 10**( (ref_rssi - rssi1) / (10*N) )
-    r2 = 10**( (ref_rssi - rssi2) / (10*N) )
-    r3 = 10**( (ref_rssi - rssi3) / (10*N) )
-    r4 = 10**( (ref_rssi - rssi4) / (10*N) )
+    # N=2
+    # ref_rssi=-61
+    # r1 = 10**( (ref_rssi - rssi1) / (10*N) )
+    # r2 = 10**( (ref_rssi - rssi2) / (10*N) )
+    # r3 = 10**( (ref_rssi - rssi3) / (10*N) )
+    # r4 = 10**( (ref_rssi - rssi4) / (10*N) )
 
-    # Ultrasound distance sensor measurements take priority within 1m range
-    distance1 = j[0][1]
-    distance2 = j[1][1]
+    # # Ultrasound distance sensor measurements take priority within 1m range
+    # distance1 = j[0][1]
+    # distance2 = j[1][1]
 
-    d_rssi = ([r1, r2, r3, r4])
-    d_sensor = ([distance1, distance2, 0, 0])
+    # d_rssi = ([r1, r2, r3, r4])
+    # d_sensor = ([distance1, distance2, 0, 0])
 
-    # fusion
-    if (0 < distance1) and (distance1 < 50):
-        r1 = float(distance1) / 100
-    if (0 < distance2) and (distance2 < 50):
-        r2 = float(distance2) / 100
+    # # fusion
+    # if (0 < distance1) and (distance1 < 50):
+    #     r1 = float(distance1) / 100
+    # if (0 < distance2) and (distance2 < 50):
+    #     r2 = float(distance2) / 100
 
 
-    r1s.append(r1)
-    r2s.append(r2)
-    r3s.append(r3)
-    r4s.append(r4)
+    rssi1s.append(rssi1)
+    rssi2s.append(rssi2)
+    rssi3s.append(rssi3)
+    rssi4s.append(rssi4)
+    rssi5s.append(rssi5)
+    rssi6s.append(rssi6)
+    rssi7s.append(rssi7)
+    rssi8s.append(rssi8)
 
     # print(r1,r2,r3,r4)
-    print(round(average(r1s[-nsamples:]),2), round(average(r2s[-nsamples:]),2), round(average(r3s[-nsamples:]),2), round(average(r4s[-nsamples:]),2))
+    print(round(average(rssi1s[-nsamples:]),2), round(average(rssi2s[-nsamples:]),2), round(average(rssi3s[-nsamples:]),2), round(average(rssi4s[-nsamples:]),2),
+        round(average(rssi5s[-nsamples:]),2), round(average(rssi6s[-nsamples:]),2), round(average(rssi7s[-nsamples:]),2), round(average(rssi8s[-nsamples:]),2))
 
-    # location = do_least_squares_approximation(r1,r2,r3,r4)
-    location = do_least_squares_approximation(average(r1s[-nsamples:]),average(r2s[-nsamples:]),average(r3s[-nsamples:]),average(r4s[-nsamples:]))
 
-    x0 = location[0][0]
-    y0 = location[1][0]
+    # # location = do_least_squares_approximation(r1,r2,r3,r4)
+    # location = do_least_squares_approximation(average(r1s[-nsamples:]),average(r2s[-nsamples:]),average(r3s[-nsamples:]),average(r4s[-nsamples:]))
 
-    x0s.append(x0)
-    y0s.append(y0)
+    # x0 = location[0][0]
+    # y0 = location[1][0]
 
-    # x0 = clamp( x0, 0, 4)
-    # y0 = clamp( y0, 0, 4)
+    # x0s.append(x0)
+    # y0s.append(y0)
 
-    # print(x0,y0)
-    st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
-    print (st_matrix)
+    # # x0 = clamp( x0, 0, 4)
+    # # y0 = clamp( y0, 0, 4)
 
-    if show_gui:
-        ax[0].set_title("Multilateration coordinates: " + str(round(x0,2)) + " " + str(round(y0,2)) )
-        ax[1].set_title("Kalman output distance: " + str(round(st_matrix[0][0],2)))
+    # # print(x0,y0)
+    # st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
+    # # print (st_matrix)
 
-        sc.set_offsets(np.c_[x0s,y0s])
-        sc1.set_offsets(np.c_[st_matrix[0][0],r1])
-        fig.canvas.draw_idle()
-        plt.pause(0.01)
+    # if show_gui:
+    #     ax[0].set_title("Multilateration coordinates: " + str(round(x0,2)) + " " + str(round(y0,2)) )
+    #     ax[1].set_title("Kalman output distance: " + str(round(st_matrix[0][0],2)))
+
+    #     sc.set_offsets(np.c_[x0s,y0s])
+    #     sc1.set_offsets(np.c_[st_matrix[0][0],r1])
+    #     fig.canvas.draw_idle()
+    #     plt.pause(0.01)
+
+
+
 
 
     # if show_gui:
