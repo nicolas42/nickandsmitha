@@ -335,6 +335,7 @@ def read_serial_process(q):
 
 # initialize serial input value
 j = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
+serial_inputs = []
 
 if __name__ == '__main__':
 
@@ -351,11 +352,23 @@ if __name__ == '__main__':
             j = serial_queue.get() # remove and return an item from the queue.
             serial_inputs.append(j)
 
-        for item in serial_inputs:
-            print(item)
+        # for item in serial_inputs:
+        #     print(item)
 
-        
-                
+        j1 = []
+        j2 = []
+        if len(serial_inputs) > 0:
+            if (serial_inputs[-1][-1] == 1):
+              j1 = serial_inputs[-1]
+              j2 = serial_inputs[-2]
+            else:
+              j2 = serial_inputs[-1]
+              j1 = serial_inputs[-2]
+
+
+        print(j1)
+        print(j2)
+
 
         # Get info from json
         # format is [[rssi1, us1],[rssi2, us2 ],[rssi3, _ ],[rssi4, _ ],[rssi5, us3],[rssi6, us4 ],[rssi7, _ ],[rssi8, _ ], id ]
@@ -376,12 +389,6 @@ if __name__ == '__main__':
 
         # the mobile device it's coming from
         mobile_id = j[8] # 1 or 2
-
-
-
-
-
-
 
 
         ## *************** for testing only *********************
