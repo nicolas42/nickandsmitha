@@ -380,7 +380,7 @@ while True:
     if mobile_id == 1:
     ## *************** for testing only *********************
     ## *************** replace with j array values ***********************
-        knn_mob1 = knn.predict([[8,8,8,8,9,10,11,11]]) #rssi values from s
+        knn_mob1 = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
     else:    
     ## *************** for testing only *********************
     ## *************** replace with j array values ***********************
