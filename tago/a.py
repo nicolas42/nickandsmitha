@@ -10,7 +10,7 @@ def get_date_time_string():
 
 
 
-def send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8):
+def send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8, us1, us2, us3, us4):
 
   now_string = get_date_time_string()
 
@@ -55,6 +55,26 @@ def send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8):
       "time": now_string,
       "variable": "rssi8",
       "value": rssi8
+    },
+    {
+      "time": now_string,
+      "variable": "us1",
+      "value": us1
+    },
+    {
+      "time": now_string,
+      "variable": "us2",
+      "value": us2
+    },
+    {
+      "time": now_string,
+      "variable": "us3",
+      "value": us4
+    },
+    {
+      "time": now_string,
+      "variable": "us4",
+      "value": us4
     }
   ]
 
@@ -88,6 +108,11 @@ rssi6 = 100*random.random()
 rssi7 = 100*random.random()
 rssi8 = 100*random.random()
 
-send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8)
+us1 = 100*random.random()
+us2 = 100*random.random()
+us3 = 100*random.random()
+us4 = 100*random.random()
+
+send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8, us1, us2, us3, us4)
 
 
