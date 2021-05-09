@@ -7,7 +7,7 @@ from sklearn import neighbors
 
 
 nsamples = 50
-show_gui = True 
+show_gui = False
 
 
 
@@ -267,22 +267,29 @@ def receive_data():
         print(findData['message']) # Error (if status is False)
 
 
+
+
+
+
+# =====================================================
+# ==================== MAIN ===========================
+# =====================================================
+
+
 # initialize tago
 MY_DEVICE_TOKEN = 'b2fcacd2-ff41-4158-bdbb-e5ec94f8cbf2'
 my_device = tago.Device(MY_DEVICE_TOKEN)
 
 
 
-# serial_port = '/dev/ttyACM0'
-# ser = serial.Serial(serial_port)
-# ser.flushInput()
-
+# initialize knn stuff
 r1 = 0
 st_matrix = np.array([[0],[0]])
 
 knn_mob1 = np.array([[0,0]])
 knn_mob2 = np.array([[0,0]])
 
+# initialize gui stuff
 if show_gui:
     import matplotlib.pyplot as plt
     import numpy as np
@@ -301,111 +308,157 @@ if show_gui:
 
 
 
-while True:
 
-    # ser_bytes = ser.readline()
-    # line = ser_bytes.decode("utf-8")
-    # print(line, end="")
-    # try:
-    #     j = json.loads(line)
-    #     #  print(json.dumps(j))            
-    # except:
-    #     ser.flushInput()
-    #     continue
+# initialize serial stuff
+import multiprocessing
+
+serial_port = '/dev/ttyACM0'
+ser = serial.Serial(serial_port)
+ser.flushInput()
 
 
-    # # Get info from json
-    # # format is [[rssi1, us1],[rssi2, us2 ],[rssi3, _ ],[rssi4, _ ],[rssi5, us3],[rssi6, us4 ],[rssi7, _ ],[rssi8, _ ], id ]
-    # rssi1 = j[0][0]
-    # rssi2 = j[1][0]
-    # rssi3 = j[2][0]
-    # rssi4 = j[3][0]
-    # rssi5 = j[4][0]
-    # rssi6 = j[5][0]
-    # rssi7 = j[6][0]
-    # rssi8 = j[7][0]
+def read_serial_process(q):
+    while True:
 
-    # # ultrasound sensor distances from nodes 1,2,5,6
-    # us1 = j[0][1] 
-    # us2 = j[1][1]
-    # us3 = j[3][1]
-    # us4 = j[4][1]
-
-    # # the mobile device it's coming from
-    #mobile_id = j[8] # 1 or 2
-
-    ## *************** for testing only *********************
-    mobile_id = 1 # 1 or 2
-
-
-    rssi1 = -100*random.random()
-    rssi2 = -100*random.random()
-    rssi3 = -100*random.random()
-    rssi4 = -100*random.random()
-    rssi5 = -100*random.random()
-    rssi6 = -100*random.random()
-    rssi7 = -100*random.random()
-    rssi8 = -100*random.random()
-
-    us1 = 0
-    us2 = 0
-    us3 = 0
-    us4 = 0
-
-
-    # dist = 10**((ref - rssi) /10*N))
-    # As of writing this we assuming N=2 and ref_rssi=-65
-    N=2
-    ref_rssi=-61
-    r1 = 10**( (ref_rssi - rssi1) / (10*N) )
-    r2 = 10**( (ref_rssi - rssi2) / (10*N) )
-    r3 = 10**( (ref_rssi - rssi3) / (10*N) )
-    r4 = 10**( (ref_rssi - rssi4) / (10*N) )
-    r5 = 10**( (ref_rssi - rssi5) / (10*N) )
-    r6 = 10**( (ref_rssi - rssi6) / (10*N) )
-    r7 = 10**( (ref_rssi - rssi7) / (10*N) )
-    r8 = 10**( (ref_rssi - rssi8) / (10*N) )
-
-    # location = do_least_squares_approximation(r1,r2,r3,r4)
-    # x0 = location[0][0]
-    # y0 = location[1][0]
-
-
-    # d_rssi = ([r1, r2, r3, r4])
-    # d_sensor = ([us1, us2, 0, 0])
-    # st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
-    # print (st_matrix)
-
-    #knn predict
-    if mobile_id == 1:
-    ## *************** for testing only *********************
-    ## *************** replace with j array values ***********************
-        knn_mob1 = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
-    else:    
-    ## *************** for testing only *********************
-    ## *************** replace with j array values ***********************
-        knn_mob2 = knn.predict([[1,2,3,4,4,5,6,7]]) #rssi values from s
-
-    print(knn_mob1[0][0], knn_mob1[0][1])
-    if show_gui:
-           sc.set_offsets(np.c_[knn_mob1[0][0],knn_mob1[0][1]])
-           sc1.set_offsets(np.c_[knn_mob2[0][0],knn_mob2[0][1]])
-
-           fig.canvas.draw_idle()
-           plt.pause(0.01)
-
-
-    print('sending data')
-    send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8, us1, us2, us3, us4)
-
-    print('receiving data')
-    variables, values = receive_data()
-    print('data received: ')
-    print(variables, values)
+        ser_bytes = ser.readline()
+        line = ser_bytes.decode("utf-8")
+        # print(line, end="")
+        try:
+            j = json.loads(line)
+            # print(json.dumps(j))
+            q.put(j)         
+        except:
+            ser.flushInput()
+            continue
 
 
 
-    # print('sleeping for 1 seconds')
-    time.sleep(1)
+# initialize serial input value
+j = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
+
+if __name__ == '__main__':
+
+    multiprocessing.set_start_method('spawn')
+    serial_queue = multiprocessing.Queue()
+    serial_process = multiprocessing.Process(target=read_serial_process, args=(serial_queue,))
+    serial_process.start()
 
 
+    while True:
+
+        serial_inputs = []
+        while not serial_queue.empty():
+            j = serial_queue.get() # remove and return an item from the queue.
+            serial_inputs.append(j)
+
+        for item in serial_inputs:
+            print(item)
+
+        
+                
+
+        # Get info from json
+        # format is [[rssi1, us1],[rssi2, us2 ],[rssi3, _ ],[rssi4, _ ],[rssi5, us3],[rssi6, us4 ],[rssi7, _ ],[rssi8, _ ], id ]
+        rssi1 = j[0][0]
+        rssi2 = j[1][0]
+        rssi3 = j[2][0]
+        rssi4 = j[3][0]
+        rssi5 = j[4][0]
+        rssi6 = j[5][0]
+        rssi7 = j[6][0]
+        rssi8 = j[7][0]
+
+        # ultrasound sensor distances from nodes 1,2,5,6
+        us1 = j[0][1] 
+        us2 = j[1][1]
+        us3 = j[3][1]
+        us4 = j[4][1]
+
+        # the mobile device it's coming from
+        mobile_id = j[8] # 1 or 2
+
+
+
+
+
+
+
+
+        ## *************** for testing only *********************
+        # mobile_id = 1 # 1 or 2
+
+
+        # rssi1 = -100*random.random()
+        # rssi2 = -100*random.random()
+        # rssi3 = -100*random.random()
+        # rssi4 = -100*random.random()
+        # rssi5 = -100*random.random()
+        # rssi6 = -100*random.random()
+        # rssi7 = -100*random.random()
+        # rssi8 = -100*random.random()
+
+        # us1 = 0
+        # us2 = 0
+        # us3 = 0
+        # us4 = 0
+
+
+        # dist = 10**((ref - rssi) /10*N))
+        # As of writing this we assuming N=2 and ref_rssi=-65
+        N=2
+        ref_rssi=-61
+        r1 = 10**( (ref_rssi - rssi1) / (10*N) )
+        r2 = 10**( (ref_rssi - rssi2) / (10*N) )
+        r3 = 10**( (ref_rssi - rssi3) / (10*N) )
+        r4 = 10**( (ref_rssi - rssi4) / (10*N) )
+        r5 = 10**( (ref_rssi - rssi5) / (10*N) )
+        r6 = 10**( (ref_rssi - rssi6) / (10*N) )
+        r7 = 10**( (ref_rssi - rssi7) / (10*N) )
+        r8 = 10**( (ref_rssi - rssi8) / (10*N) )
+
+        # location = do_least_squares_approximation(r1,r2,r3,r4)
+        # x0 = location[0][0]
+        # y0 = location[1][0]
+
+
+        # d_rssi = ([r1, r2, r3, r4])
+        # d_sensor = ([us1, us2, 0, 0])
+        # st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
+        # print (st_matrix)
+
+        #knn predict
+        if mobile_id == 1:
+        ## *************** for testing only *********************
+        ## *************** replace with j array values ***********************
+            knn_mob1 = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
+        else:    
+        ## *************** for testing only *********************
+        ## *************** replace with j array values ***********************
+            knn_mob2 = knn.predict([[1,2,3,4,4,5,6,7]]) #rssi values from s
+
+        print(knn_mob1[0][0], knn_mob1[0][1])
+        if show_gui:
+              sc.set_offsets(np.c_[knn_mob1[0][0],knn_mob1[0][1]])
+              sc1.set_offsets(np.c_[knn_mob2[0][0],knn_mob2[0][1]])
+
+              fig.canvas.draw_idle()
+              plt.pause(0.01)
+
+
+
+
+
+        # print('sending data')
+        # send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8, us1, us2, us3, us4)
+
+        # print('receiving data')
+        # variables, values = receive_data()
+        # print('data received: ')
+        # print(variables, values)
+
+
+
+        time.sleep(1)
+
+
+    serial_process.join()

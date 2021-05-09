@@ -113,7 +113,7 @@ static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 	mfg_data[0] = 0x63; // N 
 	mfg_data[1] = 0x73; // S
 	mfg_data[2] = 0x00; // 0
-	mfg_data[3] = 0x00; // 0
+	mfg_data[3] = 0x09; // 9
 
 	// NS1
 	if (id_is_equal(buf->data, 0x63,0x73,0x00, 0x01)){

@@ -139,6 +139,10 @@ def kalman_calc(s1,s2,r1,r2,r3,r4):
     return X
                  
 
+
+
+
+
 import sys
 serial_port = '/dev/ttyACM0'
 print(sys.argv)
@@ -147,6 +151,7 @@ if len(sys.argv) == 2:
  
 ser = serial.Serial(serial_port)
 ser.flushInput()
+
 
 x0s = []
 y0s = []
@@ -188,6 +193,10 @@ if show_gui:
     plt.draw()
 
 
+
+
+
+
 while True:
 
 
@@ -222,7 +231,7 @@ while True:
     rssi7 = j[6][0]
     rssi8 = j[7][0]
 
-    id = j[8]
+    # id = j[8]
 
     # dist = 10**((ref - rssi) /10*N))
     # As of writing this we assuming N=2 and ref_rssi=-65

@@ -26,6 +26,7 @@
 #include <string.h>
 #include <usb/usb_device.h>
 #include <drivers/uart.h>
+#include <stdio.h>
 
 /* size of stack area used by each thread */
 #define STACKSIZE 1024
@@ -38,6 +39,11 @@
 static void start_scan(void);
 
 static struct bt_conn *default_conn;
+
+
+
+volatile char str1[100]; 
+volatile char str2[100];
 
 static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 			 struct net_buf_simple *ad)
@@ -73,7 +79,7 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 		// }
 
 		// output json to serial
-		printk("[[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],1]\n", 
+		sprintf(str1, "[[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],1]\n", 
 		(int8_t)ad->data[6], (uint8_t)ad->data[7], 
 		(int8_t)ad->data[8], (uint8_t)ad->data[9], 
 		(int8_t)ad->data[10], (uint8_t)ad->data[11],
@@ -100,7 +106,7 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 		// }
 
 		// output json to serial
-		printk("[[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],2]\n", 
+		sprintf(str2, "[[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],2]\n", 
 		(int8_t)ad->data[6], (uint8_t)ad->data[7], 
 		(int8_t)ad->data[8], (uint8_t)ad->data[9], 
 		(int8_t)ad->data[10], (uint8_t)ad->data[11],
@@ -161,6 +167,8 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	// }
 }
 
+int print1 = 1;
+
 static void start_scan(void)
 {
 	int err;
@@ -170,6 +178,13 @@ static void start_scan(void)
 	if (err) {
 		// printk("Scanning failed to start (err %d)\n", err);
 		return;
+	}
+	if (print1) {
+		print1 = 0;
+		printk("%s\n", str1);
+	} else { // print1 == 0
+		print1 = 1;
+		printk("%s\n", str2);
 	}
 
 	// printk("Scanning successfully started\n");
