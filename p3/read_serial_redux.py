@@ -222,6 +222,8 @@ while True:
     rssi7 = j[6][0]
     rssi8 = j[7][0]
 
+    id = j[8]
+
     # dist = 10**((ref - rssi) /10*N))
     # As of writing this we assuming N=2 and ref_rssi=-65
 

@@ -73,7 +73,7 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 		// }
 
 		// output json to serial
-		printk("[[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u]]\n", 
+		printk("[[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],1]\n", 
 		(int8_t)ad->data[6], (uint8_t)ad->data[7], 
 		(int8_t)ad->data[8], (uint8_t)ad->data[9], 
 		(int8_t)ad->data[10], (uint8_t)ad->data[11],
@@ -88,6 +88,32 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	}
 
 
+
+	// two byte preamble
+	if (   (ad->data[2] == 0x63) 
+		&& (ad->data[3] == 0x73) 
+		&& (ad->data[4] == 0x00) 
+		&& (ad->data[5] == 0x09)){
+	
+		// for (int i=0; i<ad->len; i+=1){
+		// 	printk("%02X ", ad->data[i]);
+		// }
+
+		// output json to serial
+		printk("[[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],[%d,%u],2]\n", 
+		(int8_t)ad->data[6], (uint8_t)ad->data[7], 
+		(int8_t)ad->data[8], (uint8_t)ad->data[9], 
+		(int8_t)ad->data[10], (uint8_t)ad->data[11],
+		(int8_t)ad->data[12], (uint8_t)ad->data[13],
+
+		(int8_t)ad->data[14], (uint8_t)ad->data[15], 
+		(int8_t)ad->data[16], (uint8_t)ad->data[17], 
+		(int8_t)ad->data[18], (uint8_t)ad->data[19],
+		(int8_t)ad->data[20], (uint8_t)ad->data[21]);
+
+
+	}
+	
 	// for (int i=0; i<ad->len; i+=1){
 	// 	printk("%02X ", ad->data[i]);
 	// }
