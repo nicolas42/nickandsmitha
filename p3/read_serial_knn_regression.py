@@ -7,7 +7,7 @@ from sklearn import neighbors
 
 
 nsamples = 50
-show_gui = False
+show_gui = True 
 
 
 
@@ -422,6 +422,8 @@ if __name__ == '__main__':
     serial_process = multiprocessing.Process(target=read_serial_process, args=(serial_queue,))
     serial_process.start()
 
+    j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
+    j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],2]
 
     while True:
 
@@ -433,22 +435,25 @@ if __name__ == '__main__':
         # for item in serial_inputs:
         #     print(item)
 
-        j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
-        j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
         if len(serial_inputs) > 0:
-            # print(serial_inputs)
-            if (serial_inputs[-1][-1] == 1):
-              j1 = serial_inputs[-1]
-              j2 = serial_inputs[-2]
-            else:
-              j2 = serial_inputs[-1]
-              j1 = serial_inputs[-2]
+            #print(serial_inputs)
+            if (j[8] == 1):
+                knn_mob1 = get_knn_output(j)
+            else: 
+                knn_mob2 = get_knn_output(j)
+
+            #if (serial_inputs[-1][-1] == 1):
+            #  j1 = serial_inputs[-1]
+            #  j2 = serial_inputs[-2]
+            #else:
+            #  j2 = serial_inputs[-1]
+            #  j1 = serial_inputs[-2]
 
 
-        print(j1)
-        print(j2)
-        knn_mob1 = get_knn_output(j1);
-        knn_mob2 = get_knn_output(j2);
+       # print(j1)
+       # print(j2)
+       # knn_mob1 = get_knn_output(j1);
+       # knn_mob2 = get_knn_output(j2);
 
 
         print(knn_mob1[0][0], knn_mob1[0][1])
@@ -471,7 +476,7 @@ if __name__ == '__main__':
 
 
 
-        time.sleep(1)
+        time.sleep(0.1)
 
 
     serial_process.join()
