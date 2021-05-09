@@ -147,11 +147,11 @@ y = list()
 for i in range(len(rssi_reference_values)):
     X.append(rssi_reference_values[i][1])
     y.append(rssi_reference_values[i][0])
-print(X,y)
+#print(X,y)
 
 knn = neighbors.KNeighborsRegressor(n_neighbors=3)
 knn.fit(X, y)
-                 
+
 
 import tago
 import random
@@ -337,6 +337,83 @@ def read_serial_process(q):
 j = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
 serial_inputs = []
 
+def get_knn_output(j):
+    # Get info from json
+    # format is [[rssi1, us1],[rssi2, us2 ],[rssi3, _ ],[rssi4, _ ],[rssi5, us3],[rssi6, us4 ],[rssi7, _ ],[rssi8, _ ], id ]
+    rssi1 = j[0][0]
+    rssi2 = j[1][0]
+    rssi3 = j[2][0]
+    rssi4 = j[3][0]
+    rssi5 = j[4][0]
+    rssi6 = j[5][0]
+    rssi7 = j[6][0]
+    rssi8 = j[7][0]
+
+    # ultrasound sensor distances from nodes 1,2,5,6
+    us1 = j[0][1] 
+    us2 = j[1][1]
+    us3 = j[3][1]
+    us4 = j[4][1]
+
+    # the mobile device it's coming from
+    mobile_id = j[8] # 1 or 2
+
+
+    ## *************** for testing only *********************
+    # mobile_id = 1 # 1 or 2
+
+
+    #rssi1 = -100*random.random()
+    #rssi2 = -100*random.random()
+    #rssi3 = -100*random.random()
+    #rssi4 = -100*random.random()
+    #rssi5 = -100*random.random()
+    #rssi6 = -100*random.random()
+    #rssi7 = -100*random.random()
+    #rssi8 = -100*random.random()
+
+    #us1 = 0
+    #us2 = 0
+    #us3 = 0
+    #us4 = 0
+
+
+    # dist = 10**((ref - rssi) /10*N))
+    # As of writing this we assuming N=2 and ref_rssi=-65
+    N=2
+    ref_rssi=-61
+    r1 = 10**( (ref_rssi - rssi1) / (10*N) )
+    r2 = 10**( (ref_rssi - rssi2) / (10*N) )
+    r3 = 10**( (ref_rssi - rssi3) / (10*N) )
+    r4 = 10**( (ref_rssi - rssi4) / (10*N) )
+    r5 = 10**( (ref_rssi - rssi5) / (10*N) )
+    r6 = 10**( (ref_rssi - rssi6) / (10*N) )
+    r7 = 10**( (ref_rssi - rssi7) / (10*N) )
+    r8 = 10**( (ref_rssi - rssi8) / (10*N) )
+
+    knn_mob = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
+
+    # location = do_least_squares_approximation(r1,r2,r3,r4)
+    # x0 = location[0][0]
+    # y0 = location[1][0]
+
+
+    # d_rssi = ([r1, r2, r3, r4])
+    # d_sensor = ([us1, us2, 0, 0])
+    # st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
+    # print (st_matrix)
+    
+    #knn predict
+    #if mobile_id == 1:
+    ## *************** for testing only *********************
+    ## *************** replace with j array values ***********************
+    #    knn_mob1 = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
+    #else:    
+    ## *************** for testing only *********************
+    ## *************** replace with j array values ***********************
+    #    knn_mob2 = knn.predict([[1,2,3,4,4,5,6,7]]) #rssi values from s
+    return knn_mob
+
 if __name__ == '__main__':
 
     multiprocessing.set_start_method('spawn')
@@ -358,6 +435,7 @@ if __name__ == '__main__':
         j1 = []
         j2 = []
         if len(serial_inputs) > 0:
+            print(serial_inputs)
             if (serial_inputs[-1][-1] == 1):
               j1 = serial_inputs[-1]
               j2 = serial_inputs[-2]
@@ -366,82 +444,9 @@ if __name__ == '__main__':
               j1 = serial_inputs[-2]
 
 
-        print(j1)
-        print(j2)
+        knn_mob1 = get_knn_output(j1);
+        knn_mob2 = get_knn_output(j2);
 
-
-        # Get info from json
-        # format is [[rssi1, us1],[rssi2, us2 ],[rssi3, _ ],[rssi4, _ ],[rssi5, us3],[rssi6, us4 ],[rssi7, _ ],[rssi8, _ ], id ]
-        rssi1 = j[0][0]
-        rssi2 = j[1][0]
-        rssi3 = j[2][0]
-        rssi4 = j[3][0]
-        rssi5 = j[4][0]
-        rssi6 = j[5][0]
-        rssi7 = j[6][0]
-        rssi8 = j[7][0]
-
-        # ultrasound sensor distances from nodes 1,2,5,6
-        us1 = j[0][1] 
-        us2 = j[1][1]
-        us3 = j[3][1]
-        us4 = j[4][1]
-
-        # the mobile device it's coming from
-        mobile_id = j[8] # 1 or 2
-
-
-        ## *************** for testing only *********************
-        # mobile_id = 1 # 1 or 2
-
-
-        # rssi1 = -100*random.random()
-        # rssi2 = -100*random.random()
-        # rssi3 = -100*random.random()
-        # rssi4 = -100*random.random()
-        # rssi5 = -100*random.random()
-        # rssi6 = -100*random.random()
-        # rssi7 = -100*random.random()
-        # rssi8 = -100*random.random()
-
-        # us1 = 0
-        # us2 = 0
-        # us3 = 0
-        # us4 = 0
-
-
-        # dist = 10**((ref - rssi) /10*N))
-        # As of writing this we assuming N=2 and ref_rssi=-65
-        N=2
-        ref_rssi=-61
-        r1 = 10**( (ref_rssi - rssi1) / (10*N) )
-        r2 = 10**( (ref_rssi - rssi2) / (10*N) )
-        r3 = 10**( (ref_rssi - rssi3) / (10*N) )
-        r4 = 10**( (ref_rssi - rssi4) / (10*N) )
-        r5 = 10**( (ref_rssi - rssi5) / (10*N) )
-        r6 = 10**( (ref_rssi - rssi6) / (10*N) )
-        r7 = 10**( (ref_rssi - rssi7) / (10*N) )
-        r8 = 10**( (ref_rssi - rssi8) / (10*N) )
-
-        # location = do_least_squares_approximation(r1,r2,r3,r4)
-        # x0 = location[0][0]
-        # y0 = location[1][0]
-
-
-        # d_rssi = ([r1, r2, r3, r4])
-        # d_sensor = ([us1, us2, 0, 0])
-        # st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
-        # print (st_matrix)
-
-        #knn predict
-        if mobile_id == 1:
-        ## *************** for testing only *********************
-        ## *************** replace with j array values ***********************
-            knn_mob1 = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
-        else:    
-        ## *************** for testing only *********************
-        ## *************** replace with j array values ***********************
-            knn_mob2 = knn.predict([[1,2,3,4,4,5,6,7]]) #rssi values from s
 
         print(knn_mob1[0][0], knn_mob1[0][1])
         if show_gui:
@@ -450,9 +455,6 @@ if __name__ == '__main__':
 
               fig.canvas.draw_idle()
               plt.pause(0.01)
-
-
-
 
 
         # print('sending data')
