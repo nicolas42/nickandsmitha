@@ -7,7 +7,7 @@ from sklearn import neighbors
 
 
 nsamples = 50
-show_gui = False
+show_gui = True
 
 
 
