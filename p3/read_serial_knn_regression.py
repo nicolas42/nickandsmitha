@@ -414,6 +414,7 @@ def get_knn_output(j):
     #    knn_mob2 = knn.predict([[1,2,3,4,4,5,6,7]]) #rssi values from s
     return knn_mob
 
+
 if __name__ == '__main__':
 
     multiprocessing.set_start_method('spawn')
@@ -432,10 +433,10 @@ if __name__ == '__main__':
         # for item in serial_inputs:
         #     print(item)
 
-        j1 = []
-        j2 = []
+        j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
+        j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
         if len(serial_inputs) > 0:
-            print(serial_inputs)
+            # print(serial_inputs)
             if (serial_inputs[-1][-1] == 1):
               j1 = serial_inputs[-1]
               j2 = serial_inputs[-2]
@@ -444,11 +445,14 @@ if __name__ == '__main__':
               j1 = serial_inputs[-2]
 
 
+        print(j1)
+        print(j2)
         knn_mob1 = get_knn_output(j1);
         knn_mob2 = get_knn_output(j2);
 
 
         print(knn_mob1[0][0], knn_mob1[0][1])
+        print(knn_mob2[0][0], knn_mob2[0][1])
         if show_gui:
               sc.set_offsets(np.c_[knn_mob1[0][0],knn_mob1[0][1]])
               sc1.set_offsets(np.c_[knn_mob2[0][0],knn_mob2[0][1]])
