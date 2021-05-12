@@ -6,7 +6,7 @@ from numpy.linalg import inv
 from sklearn import neighbors
 
 
-nsamples = 50
+nsamples = 5
 show_gui = True
 
 
@@ -313,6 +313,10 @@ if show_gui:
 import multiprocessing
 
 serial_port = '/dev/ttyACM0'
+import sys
+if len(sys.argv) == 2:
+  serial_port = sys.argv[1]
+  print("serial port is: ", serial_port)
 ser = serial.Serial(serial_port)
 ser.flushInput()
 
@@ -414,7 +418,11 @@ def get_knn_output(j):
     #    knn_mob2 = knn.predict([[1,2,3,4,4,5,6,7]]) #rssi values from s
     return knn_mob
 
+j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
+j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],2]
 
+
+iteration = 0
 if __name__ == '__main__':
 
     multiprocessing.set_start_method('spawn')
@@ -430,11 +438,9 @@ if __name__ == '__main__':
             j = serial_queue.get() # remove and return an item from the queue.
             serial_inputs.append(j)
 
-        # for item in serial_inputs:
-        #     print(item)
-
-        j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
-        j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
+        for item in serial_inputs:
+            print(item)
+        
         if len(serial_inputs) > 0:
             # print(serial_inputs)
             if (serial_inputs[-1][-1] == 1):
@@ -445,12 +451,14 @@ if __name__ == '__main__':
               j1 = serial_inputs[-2]
 
 
-        print(j1)
-        print(j2)
+        # print(j1)
+        # print(j2)
         knn_mob1 = get_knn_output(j1);
         knn_mob2 = get_knn_output(j2);
 
 
+        print(iteration)
+        iteration += 1
         print(knn_mob1[0][0], knn_mob1[0][1])
         print(knn_mob2[0][0], knn_mob2[0][1])
         if show_gui:
@@ -469,9 +477,6 @@ if __name__ == '__main__':
         # print('data received: ')
         # print(variables, values)
 
-
-
         time.sleep(1)
-
 
     serial_process.join()

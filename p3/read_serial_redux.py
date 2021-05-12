@@ -144,7 +144,7 @@ def kalman_calc(s1,s2,r1,r2,r3,r4):
 
 
 import sys
-serial_port = '/dev/ttyACM0'
+serial_port = '/dev/ttyACM1'
 print(sys.argv)
 if len(sys.argv) == 2:
     serial_port = sys.argv[1]
@@ -210,12 +210,12 @@ while True:
     # print("serial read")
 
     line = ser_bytes.decode("utf-8")
-    print(line, end="")
+    # print(line, end="")
     try:
         j = json.loads(line)
         #  print(json.dumps(j))            
     except:
-        print("bad json", line, end="")
+        # print("bad json", line, end="")
         continue
 
 
