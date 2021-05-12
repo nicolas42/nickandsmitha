@@ -17,7 +17,7 @@ rm -rf build; west build -b nrf52840dongle_nrf52840 && \
 nrfutil pkg generate --hw-version 52 --sd-req=0x00 \
     --application build/zephyr/zephyr.hex \
     --application-version 1 pkg.zip; \
-nrfutil dfu usb-serial -pkg pkg.zip -p /dev/ttyACM0
+nrfutil dfu usb-serial -pkg pkg.zip -p /dev/ttyACM1
 
 
 # python
