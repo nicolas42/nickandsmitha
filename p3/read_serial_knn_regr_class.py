@@ -318,7 +318,7 @@ if show_gui:
     sc = ax[0].scatter(knn_mob1[0][0], knn_mob1[0][1] , c='green')
     sc1 = ax[1].scatter(knn_mob2[0][0], knn_mob2[0][1] , c='red')
     sc2 = ax[2].scatter(knn_mob1_class[0][0], knn_mob1_class[0][1] , c='blue')
-    sc3 = ax[3].scatter(knn_mob1_class[0][0], knn_mob1_class[0][1] , c='blue')
+    sc3 = ax[3].scatter(knn_mob1_class[0][0], knn_mob1_class[0][1] , c='indigo')
     ax[0].set_xlim(0,10)
     ax[0].set_ylim(0,10)
     ax[0].set_title("Knn location for mobile 1")
