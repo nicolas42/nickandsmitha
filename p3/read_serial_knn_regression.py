@@ -346,10 +346,10 @@ if show_gui:
     import matplotlib.pyplot as plt
     import numpy as np
 
-    plotcolor = ['blue','blue','blue','blue','blue','blue','blue','blue','red']
+    plotcolor = ['blue','blue','blue','blue','blue','blue','blue','blue','red', 'green']
     sizevalue = 200
-    x1_plot = [0,4,0,4,0,4,0,4, 2]
-    y1_plot = [0,0,3.5,3.5,4.5,4.5,8,8, 2]
+    x1_plot = [0,4,0,4,0,4,0,4, 2, 2]
+    y1_plot = [0,0,3.5,3.5,4.5,4.5,8,8, 2, 2]
 
     x2_plot = [0,4,0,4,0,4,0,4, 2]
     y2_plot = [0,0,3.5,3.5,4.5,4.5,8,8, 2]
@@ -360,7 +360,7 @@ if show_gui:
     ax[1].grid()
 
     sc = ax[0].scatter(x1_plot, y1_plot , c=plotcolor, s=sizevalue) # , s=sizevalue)
-    sc1 = ax[1].scatter(x2_plot, y2_plot, c=plotcolor, s=sizevalue)
+    # sc1 = ax[1].scatter(x1_plot, y1_plot, c=plotcolor, s=sizevalue)
 
     ax[0].set_xlim(-2,6)
     ax[0].set_ylim(-2,10)
@@ -563,11 +563,11 @@ if __name__ == '__main__':
         if show_gui:
 
               # line1.set_ydata(np.sin(x + phase))
-              x1_plot[-1], y1_plot[-1] = x1,y1
-              x2_plot[-1], y2_plot[-1] = x2,y2
+              x1_plot[-2], y1_plot[-2] = x1,y1
+              x1_plot[-1], y1_plot[-1] = x2,y2
 
               sc.set_offsets(np.c_[x1_plot, y1_plot])
-              sc1.set_offsets(np.c_[x2_plot, y2_plot])
+              # sc1.set_offsets(np.c_[x2_plot, y2_plot])
               fig.canvas.draw()
               fig.canvas.flush_events()
 
