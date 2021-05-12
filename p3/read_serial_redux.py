@@ -6,7 +6,7 @@ from numpy.linalg import inv
 
 
 nsamples = 50
-show_gui = False 
+show_gui = True 
 
 
 rssi_reference_values = [
@@ -271,14 +271,14 @@ while True:
         round(average(rssi5s[-nsamples:]),2), round(average(rssi6s[-nsamples:]),2), round(average(rssi7s[-nsamples:]),2), round(average(rssi8s[-nsamples:]),2))
 
 
-    # # location = do_least_squares_approximation(r1,r2,r3,r4)
-    # location = do_least_squares_approximation(average(r1s[-nsamples:]),average(r2s[-nsamples:]),average(r3s[-nsamples:]),average(r4s[-nsamples:]))
+    # location = do_least_squares_approximation(r1,r2,r3,r4)
+    location = do_least_squares_approximation(average(r1s[-nsamples:]),average(r2s[-nsamples:]),average(r3s[-nsamples:]),average(r4s[-nsamples:]))
 
-    # x0 = location[0][0]
-    # y0 = location[1][0]
+    x0 = location[0][0]
+    y0 = location[1][0]
 
-    # x0s.append(x0)
-    # y0s.append(y0)
+    x0s.append(x0)
+    y0s.append(y0)
 
     # # x0 = clamp( x0, 0, 4)
     # # y0 = clamp( y0, 0, 4)
@@ -287,14 +287,14 @@ while True:
     # st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
     # # print (st_matrix)
 
-    # if show_gui:
-    #     ax[0].set_title("Multilateration coordinates: " + str(round(x0,2)) + " " + str(round(y0,2)) )
-    #     ax[1].set_title("Kalman output distance: " + str(round(st_matrix[0][0],2)))
+    if show_gui:
+        ax[0].set_title("Multilateration coordinates: " + str(round(x0,2)) + " " + str(round(y0,2)) )
+        ax[1].set_title("Kalman output distance: " + str(round(st_matrix[0][0],2)))
 
-    #     sc.set_offsets(np.c_[x0s,y0s])
-    #     sc1.set_offsets(np.c_[st_matrix[0][0],r1])
-    #     fig.canvas.draw_idle()
-    #     plt.pause(0.01)
+        sc.set_offsets(np.c_[x0s,y0s])
+        sc1.set_offsets(np.c_[st_matrix[0][0],r1])
+        fig.canvas.draw_idle()
+        plt.pause(0.01)
 
 
 

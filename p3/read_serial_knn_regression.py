@@ -8,7 +8,7 @@ from sklearn import neighbors
 
 nsamples = 5
 show_gui = True
-
+output_to_dashboard = False
 
 
 rssi_reference_values = [
@@ -34,6 +34,50 @@ rssi_reference_values = [
 ]
 
 
+# rssi_reference_values = [
+#     [[1, 1], [-73.56, -75.1, -63.46, -59.36, -78.66, -82.56, -66.42, -83.0], 1],
+#     [[2, 1], [-65.44, -65.62, -68.0, -58.72, -89.22, -79.72, -68.28, -75.02], 1],
+#     [[3, 1], [-71.3, -57.36, -60.5, -54.74, -82.2, -85.2, -67.54, -79.06], 1],
+#     [[3, 2], [-63.62, -59.5, -59.2, -52.8, -74.74, -78.56, -66.18, -80.02], 1],
+#     [[2, 2], [-53.74, -59.18, -65.88, -56.46, -82.84, -78.28, -70.54, -81.64], 1],
+#     [[1, 2], [-65.46, -64.92, -69.02, -60.06, -84.86, -81.04, -69.54, -79.28], 1],
+#     [[1, 3], [-69.96, -67.9, -69.2, -60.46, -86.96, -83.44, -76.62, -77.44], 1],
+#     [[2, 3], [-65.4, -68.04, -69.6, -58.58, -85.5, -84.04, -76.28, -76.46], 1],
+#     [[3, 3], [-71.68, -70.36, -67.76, -60.2, -89.68, -85.38, -82.16, -72.64], 1],
+#     [[3, 4], [-71.96, -68.74, -65.44, -55.86, -88.5, -82.5, -74.98, -76.16], 1],
+#     [[2, 4], [-69.8, -71.62, -67.48, -56.44, -89.72, -86.42, -77.62, -76.38], 1],
+#     [[1, 4], [-72.84, -67.9, -62.92, -59.26, -87.9, -82.2, -78.36, -77.04], 1],
+#     [[1, 5], [-69.02, -69.94, -63.7, -62.32, -88.44, -79.12, -75.72, -75.0], 2],
+#     [[2, 5], [-74.48, -70.7, -69.7, -61.98, -87.0, -80.74, -77.2, -79.54], 2],
+#     [[3, 5], [-69.28, -72.76, -64.68, -59.32, -87.1, -80.32, -79.44, -77.2], 2],
+#     [[3, 6], [-66.8, -69.14, -66.46, -61.6, -82.46, -82.72, -76.34, -75.5], 2],
+#     [[2, 6], [-74.96, -69.88, -66.72, -59.7, -86.36, -85.1, -74.98, -79.1], 2],
+#     [[1, 7], [-81.0, -69.8, -64.72, -62.28, -86.66, -85.0, -74.18, -78.7], 2],
+#     [[2, 7], [-71.72, -69.2, -67.04, -61.78, -82.98, -79.72, -73.72, -76.0], 2],
+#     [[3, 7], [-74.9, -74.74, -66.2, -63.58, -85.3, -76.84, -74.74, -81.14], 2],
+#     [[3, 8], [-71.94, -71.2, -68.1, -64.64, -86.34, -78.28, -72.5, -81.7], 2],
+#     [[2, 8], [-70.24, -70.48, -68.24, -66.6, -83.12, -78.5, -70.76, -79.02], 2],
+#     [[1, 8], [-71.8, -70.42, -70.98, -65.42, -82.12, -85.98, -77.14, -78.82], 2],
+#     [ [0,0], [-56.8,-59.8,-52.18,-70.1,-91.0,-62.0,-68.68,-77.74 ], 1],
+#     [ [4,0], [-68.08,-55.54,-57.4,-65.02,-87.46,-62.0,-67.64,-83.02 ],1 ],
+#     [ [4,3.5], [-72.04,-66.7,-48.02,-70.78,-84.86,-62.0,-64.62,-79.78 ],1 ],
+#     [ [4,4.5], [-80.2,-68.14,-53.44,-63.98,-87.84,-62.0,-62.42,-81.5 ],2 ],
+#     [ [4,8], [-64.62,-71.58,-60.46,-63.98,-87.26,-62.0,-56.44,-78.04 ],2 ],
+#     [ [0,8], [-70.26,-61.56,-57.94,-63.48,-87.2,-62.0,-62.72,-70.18 ],2 ],
+#     [ [0,4.5], [-55.06,-64.52,-58.56,-49.9,-74.06,-62.0,-69.1,-73.38 ],2 ],
+#     [ [0,3.5], [-64.38,-60.64,-54.56,-39.82,-80.2,-62.0,-58.72,-73.74 ],1 ],
+#     [ [4,1.75], [-69.44,-56.02,-56.88,-67.38,-85.24,-62.0,-60.58,-78.5],1 ],
+#     [ [2,0], [-66.64,-69.42,-59.24,-66.26,-82.2,-62.0,-69.76,-74.88 ],1 ],
+#     [ [0,1.75], [-62.22,-68.84,-55.4,-60.48,-86.08,-62.0,-65.52,-68.44 ],1 ],
+#     [ [2,1.75], [-60.84,-50.78,-53.92,-56.52,-83.74,-62.0,-64.82,-81.64 ],1 ],
+#     [ [2,3.5], [-51.34,-69.7,-55.02,-61.24,-83.16,-62.0,-68.14,-70.82 ],1 ],
+#     [ [4,6.25], [-67.78,-65.6,-63.66,-61.42,-88.56,-62.0,-65.48,-76.56 ],2 ],
+#     [ [2,4.5], [-67.14,-55.16,-55.54,-62.06,-77.06,-62.0,-67.62,-76.62 ],2 ],
+#     [ [0,6.25], [-59.04,-63.8,-60.0,-48.88,-79.26,-62.0,-76.8,-66.74 ],2 ],
+#     [ [2,8], [-65.4,-64.42,-60.72,-55.58,-84.5,-62.0,-57.36,-76.18 ],2 ],
+#     [ [2,6.25], [-63.78,-59.12,-47.4,-61.9,-83.5,-62.0,-72.34,-76.66 ],2 ]
+# ]
+
 def do_least_squares_approximation(r1,r2,r3,r4):
 
 
@@ -51,21 +95,21 @@ def do_least_squares_approximation(r1,r2,r3,r4):
     # r3 = 2.0
     # r4 = 2.0
 
-    x1,y1 = 0.0,0.0
-    x2,y2 = 4.0,0.0
+    x1_plot,y1_plot = 0.0,0.0
+    x2_plot,y2_plot = 4.0,0.0
     x3,y3 = 4.0,4.0
     x4,y4 = 0.0,4.0
 
 
     b = np.array([
-    [ r1**2 -r4**2 -x1**2 -y1**2 +x4**2 +y4**2 ], 
-    [ r2**2 -r4**2 -x2**2 -y2**2 +x4**2 +y4**2 ], 
+    [ r1**2 -r4**2 -x1_plot**2 -y1_plot**2 +x4**2 +y4**2 ], 
+    [ r2**2 -r4**2 -x2_plot**2 -y2_plot**2 +x4**2 +y4**2 ], 
     [ r3**2 -r4**2 -x3**2 -y3**2 +x4**2 +y4**2 ]
     ])
 
     A = np.array([
-    [ 2*(x4-x1), 2*(y4-y1)],
-    [ 2*(x4-x2), 2*(y4-y2)],
+    [ 2*(x4-x1_plot), 2*(y4-y1_plot)],
+    [ 2*(x4-x2_plot), 2*(y4-y2_plot)],
     [ 2*(x4-x3), 2*(y4-y3)]
     ])
 
@@ -149,7 +193,7 @@ for i in range(len(rssi_reference_values)):
     y.append(rssi_reference_values[i][0])
 #print(X,y)
 
-knn = neighbors.KNeighborsRegressor(n_neighbors=3)
+knn = neighbors.KNeighborsRegressor(n_neighbors=3, weights='distance')
 knn.fit(X, y)
 
 
@@ -290,20 +334,39 @@ st_matrix = np.array([[0],[0]])
 knn_mob1 = np.array([[0,0]])
 knn_mob2 = np.array([[0,0]])
 
+
+x1s = []
+y1s = []
+x2s = []
+y2s = []
+
+
 # initialize gui stuff
 if show_gui:
     import matplotlib.pyplot as plt
     import numpy as np
 
+    plotcolor = ['blue','blue','blue','blue','blue','blue','blue','blue','red']
+    sizevalue = 200
+    x1_plot = [0,4,0,4,0,4,0,4, 2]
+    y1_plot = [0,0,3.5,3.5,4.5,4.5,8,8, 2]
+
+    x2_plot = [0,4,0,4,0,4,0,4, 2]
+    y2_plot = [0,0,3.5,3.5,4.5,4.5,8,8, 2]
+
     plt.ion()
-    fig, ax = plt.subplots(2)
-    sc = ax[0].scatter(knn_mob1[0][0], knn_mob1[0][1] , c='green')
-    sc1 = ax[1].scatter(knn_mob2[0][0], knn_mob2[0][1] , c='red')
-    ax[0].set_xlim(0,10)
-    ax[0].set_ylim(0,10)
+    fig, ax = plt.subplots(2, figsize=(20,20), dpi=80)
+    ax[0].grid()
+    ax[1].grid()
+
+    sc = ax[0].scatter(x1_plot, y1_plot , c=plotcolor, s=sizevalue) # , s=sizevalue)
+    sc1 = ax[1].scatter(x2_plot, y2_plot, c=plotcolor, s=sizevalue)
+
+    ax[0].set_xlim(-2,6)
+    ax[0].set_ylim(-2,10)
     ax[0].set_title("Knn location for mobile 1")
-    ax[1].set_xlim(0,10)
-    ax[1].set_ylim(0,10)
+    ax[1].set_xlim(-2,6)
+    ax[1].set_ylim(-2,10)
     ax[1].set_title("Knn location for mobile 2")
     plt.draw()
 
@@ -457,32 +520,73 @@ if __name__ == '__main__':
             #   j2 = serial_inputs[-1]
             #   j1 = serial_inputs[-2]
 
+
+        rssi1 = j[0][0]
+        rssi2 = j[1][0]
+        rssi3 = j[2][0]
+        rssi4 = j[3][0]
+        rssi5 = j[4][0]
+        rssi6 = j[5][0]
+        rssi7 = j[6][0]
+        rssi8 = j[7][0]
+
+        # ultrasound sensor distances from nodes 1,2,5,6
+        us1 = j[0][1] 
+        us2 = j[1][1]
+        us3 = j[3][1]
+        us4 = j[4][1]
+
+        # the mobile device it's coming from
+        mobile_id = j[8] # 1 or 2
+
+
         print("chosen values")
         print(j1)
         print(j2)
-        knn_mob1 = get_knn_output(j1);
-        knn_mob2 = get_knn_output(j2);
+        knn_mob1 = get_knn_output(j1)
+        knn_mob2 = get_knn_output(j2) 
 
 
         print("iteration: ", iteration)
         iteration += 1
-        print("mobile 1: x y: ", knn_mob1[0][0], knn_mob1[0][1])
-        print("mobile 2: x y", knn_mob2[0][0], knn_mob2[0][1])
+        print("mobile 1 x y: ", knn_mob1[0][0], knn_mob1[0][1])
+        print("mobile 2 x y:", knn_mob2[0][0], knn_mob2[0][1])
+
+        x1,y1 = knn_mob1[0][0], knn_mob1[0][1]
+        x2,y2 = knn_mob2[0][0], knn_mob2[0][1]
+
+        # x1s.append(x1)
+        # y1s.append(y1)
+        # print(round(average(rssi1s[-nsamples:]),2), round(average(rssi2s[-nsamples:]),2), round(average(rssi3s[-nsamples:]),2), round(average(rssi4s[-nsamples:]),2),
+        # round(average(rssi5s[-nsamples:]),2), round(average(rssi6s[-nsamples:]),2), round(average(rssi7s[-nsamples:]),2), round(average(rssi8s[-nsamples:]),2))
+
         if show_gui:
-              sc.set_offsets(np.c_[knn_mob1[0][0],knn_mob1[0][1]])
-              sc1.set_offsets(np.c_[knn_mob2[0][0],knn_mob2[0][1]])
 
-              fig.canvas.draw_idle()
-              plt.pause(0.01)
+              # line1.set_ydata(np.sin(x + phase))
+              x1_plot[-1], y1_plot[-1] = x1,y1
+              x2_plot[-1], y2_plot[-1] = x2,y2
+
+              sc.set_offsets(np.c_[x1_plot, y1_plot])
+              sc1.set_offsets(np.c_[x2_plot, y2_plot])
+              fig.canvas.draw()
+              fig.canvas.flush_events()
+
+              # sc.set_offsets(np.c_[knn_mob1[0][0],knn_mob1[0][1]])
+              # sc1.set_offsets(np.c_[knn_mob2[0][0],knn_mob2[0][1]])
+
+              # fig.canvas.draw_idle()
+              # plt.pause(0.01)
 
 
-        # print('sending data')
-        # send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8, us1, us2, us3, us4)
 
-        # print('receiving data')
-        # variables, values = receive_data()
-        # print('data received: ')
-        # print(variables, values)
+        if output_to_dashboard:
+          print('sending data')
+          send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8, us1, us2, us3, us4)
+
+          print('receiving data')
+          variables, values = receive_data()
+          print('data received: ')
+          print(variables, values)
 
         time.sleep(1)
 
