@@ -202,18 +202,18 @@ X= list()
 y = list()
 test_set = list()
 
-for q in range(len(rssi_reference_values2)):
-    rssi_values = rssi_reference_values2[q][1]
+for q in range(len(rssi_reference_values)):
+    rssi_values = rssi_reference_values[q][1]
     #print(rssi_values)
     dist = 0.0
     for p in range(len(rssi_values)):
         dist = calc_rssi_dist(rssi_values[p])
-    #    print( rssi_reference_values2[q][-1])
-        test_set.append([dist, rssi_reference_values2[q][0], rssi_reference_values2[q][-1]])
+    #    print( rssi_reference_values[q][-1])
+        test_set.append([dist, rssi_reference_values[q][0], rssi_reference_values[q][-1]])
 
-for i in range(len(rssi_reference_values2)):
-    X.append(rssi_reference_values2[i][1])
-    y.append(rssi_reference_values2[i][0])
+for i in range(len(rssi_reference_values)):
+    X.append(rssi_reference_values[i][1])
+    y.append(rssi_reference_values[i][0])
 #print(X,y)
 
 knn = neighbors.KNeighborsRegressor(n_neighbors=3,weights='distance')
