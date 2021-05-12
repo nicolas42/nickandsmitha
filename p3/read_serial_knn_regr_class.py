@@ -6,11 +6,34 @@ from numpy.linalg import inv
 from sklearn import neighbors
 
 
-nsamples = 50
+nsamples = 5
 show_gui = True 
 
 rssi_reference_values = [
     # coordinate (x,y) [rssi values], class (box 1 or box 2)
+    [[1, 1], [-73.56, -75.1, -63.46, -59.36, -78.66, -82.56, -66.42, -83.0], 1],
+    [[2, 1], [-65.44, -65.62, -68.0, -58.72, -89.22, -79.72, -68.28, -75.02], 1],
+    [[3, 1], [-71.3, -57.36, -60.5, -54.74, -82.2, -85.2, -67.54, -79.06], 1],
+    [[3, 2], [-63.62, -59.5, -59.2, -52.8, -74.74, -78.56, -66.18, -80.02], 1],
+    [[2, 2], [-53.74, -59.18, -65.88, -56.46, -82.84, -78.28, -70.54, -81.64], 1],
+    [[1, 2], [-65.46, -64.92, -69.02, -60.06, -84.86, -81.04, -69.54, -79.28], 1],
+    [[1, 3], [-69.96, -67.9, -69.2, -60.46, -86.96, -83.44, -76.62, -77.44], 1],
+    [[2, 3], [-65.4, -68.04, -69.6, -58.58, -85.5, -84.04, -76.28, -76.46], 1],
+    [[3, 3], [-71.68, -70.36, -67.76, -60.2, -89.68, -85.38, -82.16, -72.64], 1],
+    [[3, 4], [-71.96, -68.74, -65.44, -55.86, -88.5, -82.5, -74.98, -76.16], 1],
+    [[2, 4], [-69.8, -71.62, -67.48, -56.44, -89.72, -86.42, -77.62, -76.38], 1],
+    [[1, 4], [-72.84, -67.9, -62.92, -59.26, -87.9, -82.2, -78.36, -77.04], 1],
+    [[1, 5], [-69.02, -69.94, -63.7, -62.32, -88.44, -79.12, -75.72, -75.0], 2],
+    [[2, 5], [-74.48, -70.7, -69.7, -61.98, -87.0, -80.74, -77.2, -79.54], 2],
+    [[3, 5], [-69.28, -72.76, -64.68, -59.32, -87.1, -80.32, -79.44, -77.2], 2],
+    [[3, 6], [-66.8, -69.14, -66.46, -61.6, -82.46, -82.72, -76.34, -75.5], 2],
+    [[2, 6], [-74.96, -69.88, -66.72, -59.7, -86.36, -85.1, -74.98, -79.1], 2],
+    [[1, 7], [-81.0, -69.8, -64.72, -62.28, -86.66, -85.0, -74.18, -78.7], 2],
+    [[2, 7], [-71.72, -69.2, -67.04, -61.78, -82.98, -79.72, -73.72, -76.0], 2],
+    [[3, 7], [-74.9, -74.74, -66.2, -63.58, -85.3, -76.84, -74.74, -81.14], 2],
+    [[3, 8], [-71.94, -71.2, -68.1, -64.64, -86.34, -78.28, -72.5, -81.7], 2],
+    [[2, 8], [-70.24, -70.48, -68.24, -66.6, -83.12, -78.5, -70.76, -79.02], 2],
+    [[1, 8], [-71.8, -70.42, -70.98, -65.42, -82.12, -85.98, -77.14, -78.82], 2],
     [ [0,0], [-56.8,-59.8,-52.18,-70.1,-91.0,-62.0,-68.68,-77.74 ], 1],
     [ [4,0], [-68.08,-55.54,-57.4,-65.02,-87.46,-62.0,-67.64,-83.02 ],1 ],
     [ [4,3.5], [-72.04,-66.7,-48.02,-70.78,-84.86,-62.0,-64.62,-79.78 ],1 ],
@@ -30,7 +53,6 @@ rssi_reference_values = [
     [ [2,8], [-65.4,-64.42,-60.72,-55.58,-84.5,-62.0,-57.36,-76.18 ],2 ],
     [ [2,6.25], [-63.78,-59.12,-47.4,-61.9,-83.5,-62.0,-72.34,-76.66 ],2 ]
 ]
-
 
 def do_least_squares_approximation(r1,r2,r3,r4=0):
 
@@ -169,7 +191,7 @@ for i in range(len(rssi_reference_values)):
     y.append(rssi_reference_values[i][0])
 #print(X,y)
 
-knn = neighbors.KNeighborsRegressor(n_neighbors=3)
+knn = neighbors.KNeighborsRegressor(n_neighbors=3,weights='distance')
 knn.fit(X, y)
 
 
@@ -297,7 +319,6 @@ MY_DEVICE_TOKEN = 'b2fcacd2-ff41-4158-bdbb-e5ec94f8cbf2'
 my_device = tago.Device(MY_DEVICE_TOKEN)
 
 
-
 # initialize knn stuff
 r1 = 0
 st_matrix = np.array([[0],[0]])
@@ -318,7 +339,7 @@ if show_gui:
     sc = ax[0].scatter(knn_mob1[0][0], knn_mob1[0][1] , c='green')
     sc1 = ax[1].scatter(knn_mob2[0][0], knn_mob2[0][1] , c='red')
     sc2 = ax[2].scatter(knn_mob1_class[0][0], knn_mob1_class[0][1] , c='blue')
-    sc3 = ax[3].scatter(knn_mob1_class[0][0], knn_mob1_class[0][1] , c='indigo')
+    sc3 = ax[3].scatter(knn_mob2_class[0][0], knn_mob2_class[0][1] , c='indigo')
     ax[0].set_xlim(0,10)
     ax[0].set_ylim(0,10)
     ax[0].set_title("Knn location for mobile 1")
@@ -334,29 +355,27 @@ if show_gui:
     plt.draw()
 
 
-
-
 # initialize serial stuff
 import multiprocessing
 
-#serial_port = '/dev/ttyACM0'
-#ser = serial.Serial(serial_port)
-#ser.flushInput()
+serial_port = '/dev/ttyACM0'
+ser = serial.Serial(serial_port)
+ser.flushInput()
 
 
-#def read_serial_process(q):
-#    while True:
+def read_serial_process(q):
+    while True:
 
-#        ser_bytes = ser.readline()
-#        line = ser_bytes.decode("utf-8")
-        # print(line, end="")
-#        try:
-#            j = json.loads(line)
-            # print(json.dumps(j))
-#            q.put(j)         
-#        except:
-#            ser.flushInput()
-#            continue
+        ser_bytes = ser.readline()
+        line = ser_bytes.decode("utf-8")
+       # print(line, end="")
+        try:
+            j = json.loads(line)
+           # print(json.dumps(j))
+            q.put(j)         
+        except:
+            ser.flushInput()
+            continue
 
 
 
@@ -424,7 +443,7 @@ def get_ranging_neighbours(test_set, input_data, k):
 # Predict the class in which the data input lies
 def predict_classification(test_set, input_data, k):
     neighbours = get_ranging_neighbours(test_set, input_data, k)
-    print(neighbours)
+    #print(neighbours)
     output_values = [row[0][-1] for row in neighbours]
     prediction = max(set(output_values), key=output_values.count)
 
@@ -454,7 +473,7 @@ def get_knn_class_output(j):
     r7 = 10**( (ref_rssi - j[6][0]) / (10*N) )
     r8 = 10**( (ref_rssi - j[7][0]) / (10*N) )
     
-    print(r1, r2, r3, r4, r5, r6, r7,r8)
+    #print(r1, r2, r3, r4, r5, r6, r7,r8)
     data = (r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8)/8
     prediction,nn = k_nearest_neighbours(test_set, data, k)
     knn_location = do_least_squares_approximation(nn[0][0][0],nn[1][0][0],nn[2][0][0])
@@ -465,8 +484,8 @@ if __name__ == '__main__':
 
     multiprocessing.set_start_method('spawn')
     serial_queue = multiprocessing.Queue()
-   # serial_process = multiprocessing.Process(target=read_serial_process, args=(serial_queue,))
-   # serial_process.start()
+    serial_process = multiprocessing.Process(target=read_serial_process, args=(serial_queue,))
+    serial_process.start()
 
     j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
     j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],2]
@@ -482,52 +501,53 @@ if __name__ == '__main__':
         #     print(item)
 
         ##************* start testing only *************
-        rssi1 = -100*random.random()
-        rssi2 = -100*random.random()
-        rssi3 = -100*random.random()
-        rssi4 = -100*random.random()
-        rssi5 = -100*random.random()
-        rssi6 = -100*random.random()
-        rssi7 = -100*random.random()
-        rssi8 = -100*random.random()
-        
-        j[0][0] = rssi1
-        j[1][0] = rssi2
-        j[2][0] = rssi3
-        j[3][0] = rssi4
-        j[4][0] = rssi5
-        j[5][0] = rssi6
-        j[6][0] = rssi7
-        j[7][0] = rssi8
-        
-        if j[8] == 1:
-            j[8] = 2
-        else:
-            j[8] = 1
-           
+        #rssi1 = -100*random.random()
+        #rssi2 = -100*random.random()
+        #rssi3 = -100*random.random()
+        #rssi4 = -100*random.random()
+        #rssi5 = -100*random.random()
+        #rssi6 = -100*random.random()
+        #rssi7 = -100*random.random()
+        #rssi8 = -100*random.random()
+        #
+        #j[0][0] = rssi1
+        #j[1][0] = rssi2
+        #j[2][0] = rssi3
+        #j[3][0] = rssi4
+        #j[4][0] = rssi5
+        #j[5][0] = rssi6
+        #j[6][0] = rssi7
+        #j[7][0] = rssi8
+        #
+        #if j[8] == 1:
+        #    j[8] = 2
+        #else:
+        #    j[8] = 1
+        #   
         ##************* end testing only *************
-
 
         if len(serial_inputs) > 0:
             #print(serial_inputs)
             if (j[8] == 1):
                 knn_mob1 = get_knn_output(j)
-            #    knn_mob1_class = get_knn_class_output(j)
-            else: 
+            if (j[8] == 2): 
                 knn_mob2 = get_knn_output(j)
-           #     knn_mob2_class = get_knn_class_output(j)
 
         prediction, knn_mob_class = get_knn_class_output(j)
-        if prediction[0] == 1:
+        #knn_mob1_class[0][0] = knn_mob_1_class[0][0]
+        #knn_mob1_class[0][1] = knn_mob_1_class[1][0]
+        #knn_mob2_class[0][0] = knn_mob_2_class[0][0]
+        #knn_mob2_class[0][1] = knn_mob_2_class[1][0]
+
+        if j[8] == 1:
            knn_mob1_class[0][0] = knn_mob_class[0][0]
            knn_mob1_class[0][1] = knn_mob_class[1][0]
-           print(knn_mob1_class)
-        else:
+        if j[8] == 2:
            knn_mob2_class[0][0] = knn_mob_class[0][0]
            knn_mob2_class[0][1] = knn_mob_class[1][0]
         
-        print(prediction)
-        print(knn_mob_class)
+        #print(prediction)
+        #print(knn_mob_class)
 
         if show_gui:
               sc.set_offsets(np.c_[knn_mob1[0][0],knn_mob1[0][1]])
@@ -547,7 +567,7 @@ if __name__ == '__main__':
         # print('data received: ')
         # print(variables, values)
 
-        time.sleep(0.1)
+        time.sleep(1)
 
 
     serial_process.join()
