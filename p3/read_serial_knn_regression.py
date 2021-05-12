@@ -172,6 +172,7 @@ def send_data(rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8, us1, us2, 
   data_to_insert =  [
 
     {
+      # "metadata": {"x": 2, "y": 3}
       "time": now_string,
       "variable": "rssi1",
       "value": rssi1
@@ -441,26 +442,32 @@ if __name__ == '__main__':
         for item in serial_inputs:
             print(item)
         
+        
         if len(serial_inputs) > 0:
-            # print(serial_inputs)
-            if (serial_inputs[-1][-1] == 1):
-              j1 = serial_inputs[-1]
-              j2 = serial_inputs[-2]
-            else:
-              j2 = serial_inputs[-1]
-              j1 = serial_inputs[-2]
+          for item in serial_inputs:
+            if item[8] == 1:
+              j1 = item
+            if item[8] == 2:
+              j2 = item
+            # # print(serial_inputs)
+            # if (serial_inputs[-1][-1] == 1):
+            #   j1 = serial_inputs[-1]
+            #   j2 = serial_inputs[-2]
+            # else:
+            #   j2 = serial_inputs[-1]
+            #   j1 = serial_inputs[-2]
 
-
-        # print(j1)
-        # print(j2)
+        print("chosen values")
+        print(j1)
+        print(j2)
         knn_mob1 = get_knn_output(j1);
         knn_mob2 = get_knn_output(j2);
 
 
-        print(iteration)
+        print("iteration: ", iteration)
         iteration += 1
-        print(knn_mob1[0][0], knn_mob1[0][1])
-        print(knn_mob2[0][0], knn_mob2[0][1])
+        print("mobile 1: x y: ", knn_mob1[0][0], knn_mob1[0][1])
+        print("mobile 2: x y", knn_mob2[0][0], knn_mob2[0][1])
         if show_gui:
               sc.set_offsets(np.c_[knn_mob1[0][0],knn_mob1[0][1]])
               sc1.set_offsets(np.c_[knn_mob2[0][0],knn_mob2[0][1]])
