@@ -6,13 +6,8 @@ from numpy.linalg import inv
 from sklearn import neighbors
 
 
-<<<<<<< HEAD
 nsamples = 5
 show_gui = True
-=======
-nsamples = 50
-show_gui = True 
->>>>>>> 317c499a605765aaf35d6b981f1b1adae06b4b9d
 
 
 
@@ -435,8 +430,6 @@ if __name__ == '__main__':
     serial_process = multiprocessing.Process(target=read_serial_process, args=(serial_queue,))
     serial_process.start()
 
-    j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
-    j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],2]
 
     while True:
 
@@ -445,41 +438,23 @@ if __name__ == '__main__':
             j = serial_queue.get() # remove and return an item from the queue.
             serial_inputs.append(j)
 
-<<<<<<< HEAD
         for item in serial_inputs:
             print(item)
         
-=======
-        # for item in serial_inputs:
-        #     print(item)
-
->>>>>>> 317c499a605765aaf35d6b981f1b1adae06b4b9d
         if len(serial_inputs) > 0:
-            #print(serial_inputs)
-            if (j[8] == 1):
-                knn_mob1 = get_knn_output(j)
-            else: 
-                knn_mob2 = get_knn_output(j)
+            # print(serial_inputs)
+            if (serial_inputs[-1][-1] == 1):
+              j1 = serial_inputs[-1]
+              j2 = serial_inputs[-2]
+            else:
+              j2 = serial_inputs[-1]
+              j1 = serial_inputs[-2]
 
-            #if (serial_inputs[-1][-1] == 1):
-            #  j1 = serial_inputs[-1]
-            #  j2 = serial_inputs[-2]
-            #else:
-            #  j2 = serial_inputs[-1]
-            #  j1 = serial_inputs[-2]
 
-<<<<<<< HEAD
         # print(j1)
         # print(j2)
         knn_mob1 = get_knn_output(j1);
         knn_mob2 = get_knn_output(j2);
-=======
-
-       # print(j1)
-       # print(j2)
-       # knn_mob1 = get_knn_output(j1);
-       # knn_mob2 = get_knn_output(j2);
->>>>>>> 317c499a605765aaf35d6b981f1b1adae06b4b9d
 
 
         print(iteration)
@@ -502,12 +477,6 @@ if __name__ == '__main__':
         # print('data received: ')
         # print(variables, values)
 
-<<<<<<< HEAD
         time.sleep(1)
-=======
-
-
-        time.sleep(0.1)
->>>>>>> 317c499a605765aaf35d6b981f1b1adae06b4b9d
 
     serial_process.join()

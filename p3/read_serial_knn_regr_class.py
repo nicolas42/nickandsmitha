@@ -6,15 +6,8 @@ from numpy.linalg import inv
 from sklearn import neighbors
 
 
-<<<<<<< HEAD
-nsamples = 5
-show_gui = True
-=======
 nsamples = 50
 show_gui = True 
->>>>>>> 317c499a605765aaf35d6b981f1b1adae06b4b9d
-
-
 
 rssi_reference_values = [
     # coordinate (x,y) [rssi values], class (box 1 or box 2)
@@ -39,8 +32,7 @@ rssi_reference_values = [
 ]
 
 
-def do_least_squares_approximation(r1,r2,r3,r4):
-
+def do_least_squares_approximation(r1,r2,r3,r4=0):
 
     # # Approximate the position of the mobile device
     # # using four static devices which are each 4 meters apart
@@ -49,6 +41,14 @@ def do_least_squares_approximation(r1,r2,r3,r4):
     # # derived from an ultrasound sensor.
 
     # nodes 1..k where k=4
+    x1,y1 = 0.0,0.0
+    x2,y2 = 4.0,0.0
+    x3,y3 = 4.0,4.0
+    x4,y4 = 0.0,4.0
+    x5,y5 = 4.0,0.0
+    x6,y6 = 4.0,4.0
+    x7,y7 = 8.0,4.0
+    x8,y8 = 8.0,0.0
 
     # for testing
     # r1 = 2.0
@@ -56,22 +56,20 @@ def do_least_squares_approximation(r1,r2,r3,r4):
     # r3 = 2.0
     # r4 = 2.0
 
-    x1,y1 = 0.0,0.0
-    x2,y2 = 4.0,0.0
-    x3,y3 = 4.0,4.0
-    x4,y4 = 0.0,4.0
+    #x1,y1 = 0.0,0.0
+    #x2,y2 = 4.0,0.0
+    #x3,y3 = 4.0,4.0
+    #x4,y4 = 0.0,4.0
 
 
     b = np.array([
-    [ r1**2 -r4**2 -x1**2 -y1**2 +x4**2 +y4**2 ], 
-    [ r2**2 -r4**2 -x2**2 -y2**2 +x4**2 +y4**2 ], 
-    [ r3**2 -r4**2 -x3**2 -y3**2 +x4**2 +y4**2 ]
+    [ r1**2 -r3**2 -x1**2 -y1**2 +x3**2 +y3**2 ], 
+    [ r2**2 -r3**2 -x2**2 -y2**2 +x3**2 +y3**2 ] 
     ])
 
     A = np.array([
-    [ 2*(x4-x1), 2*(y4-y1)],
-    [ 2*(x4-x2), 2*(y4-y2)],
-    [ 2*(x4-x3), 2*(y4-y3)]
+    [ 2*(x3-x1), 2*(y3-y1)],
+    [ 2*(x3-x2), 2*(y3-y2)]
     ])
 
     # Ax = b
@@ -146,8 +144,25 @@ def kalman_calc(s1,s2,r1,r2,r3,r4):
     X, P = update(X, P, r4, error_obs_x, H)
     return X
 
+def calc_rssi_dist(rssi_val):
+    N=2
+    ref_rssi=-61
+    r = 10**( (ref_rssi - rssi_val) / (10*N) )
+    return r
+
+
 X= list()
 y = list()
+test_set = list()
+
+for q in range(len(rssi_reference_values)):
+    rssi_values = rssi_reference_values[q][1]
+    #print(rssi_values)
+    dist = 0.0
+    for p in range(len(rssi_values)):
+        dist = calc_rssi_dist(rssi_values[p])
+    #    print( rssi_reference_values[q][-1])
+        test_set.append([dist, rssi_reference_values[q][0], rssi_reference_values[q][-1]])
 
 for i in range(len(rssi_reference_values)):
     X.append(rssi_reference_values[i][1])
@@ -272,10 +287,6 @@ def receive_data():
         print(findData['message']) # Error (if status is False)
 
 
-
-
-
-
 # =====================================================
 # ==================== MAIN ===========================
 # =====================================================
@@ -293,6 +304,9 @@ st_matrix = np.array([[0],[0]])
 
 knn_mob1 = np.array([[0,0]])
 knn_mob2 = np.array([[0,0]])
+knn_mob1_class = np.array([[0,0]])
+knn_mob2_class = np.array([[0,0]])
+knn_mob_class = np.array([[0,0]])
 
 # initialize gui stuff
 if show_gui:
@@ -300,15 +314,23 @@ if show_gui:
     import numpy as np
 
     plt.ion()
-    fig, ax = plt.subplots(2)
+    fig, ax = plt.subplots(4)
     sc = ax[0].scatter(knn_mob1[0][0], knn_mob1[0][1] , c='green')
     sc1 = ax[1].scatter(knn_mob2[0][0], knn_mob2[0][1] , c='red')
+    sc2 = ax[2].scatter(knn_mob1_class[0][0], knn_mob1_class[0][1] , c='blue')
+    sc3 = ax[3].scatter(knn_mob1_class[0][0], knn_mob1_class[0][1] , c='blue')
     ax[0].set_xlim(0,10)
     ax[0].set_ylim(0,10)
     ax[0].set_title("Knn location for mobile 1")
     ax[1].set_xlim(0,10)
     ax[1].set_ylim(0,10)
     ax[1].set_title("Knn location for mobile 2")
+    ax[2].set_xlim(0,10)
+    ax[2].set_ylim(0,10)
+    ax[2].set_title("Knn mobile-1 location by classification")
+    ax[3].set_xlim(0,10)
+    ax[3].set_ylim(0,10)
+    ax[3].set_title("Knn mobile-2 location by classification")
     plt.draw()
 
 
@@ -317,28 +339,24 @@ if show_gui:
 # initialize serial stuff
 import multiprocessing
 
-serial_port = '/dev/ttyACM0'
-import sys
-if len(sys.argv) == 2:
-  serial_port = sys.argv[1]
-  print("serial port is: ", serial_port)
-ser = serial.Serial(serial_port)
-ser.flushInput()
+#serial_port = '/dev/ttyACM0'
+#ser = serial.Serial(serial_port)
+#ser.flushInput()
 
 
-def read_serial_process(q):
-    while True:
+#def read_serial_process(q):
+#    while True:
 
-        ser_bytes = ser.readline()
-        line = ser_bytes.decode("utf-8")
+#        ser_bytes = ser.readline()
+#        line = ser_bytes.decode("utf-8")
         # print(line, end="")
-        try:
-            j = json.loads(line)
+#        try:
+#            j = json.loads(line)
             # print(json.dumps(j))
-            q.put(j)         
-        except:
-            ser.flushInput()
-            continue
+#            q.put(j)         
+#        except:
+#            ser.flushInput()
+#            continue
 
 
 
@@ -386,109 +404,136 @@ def get_knn_output(j):
     #us3 = 0
     #us4 = 0
 
+    knn_mob = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
+    #print(knn_mob)
+    return knn_mob
 
+def get_ranging_neighbours(test_set, input_data, k):
+    distance_values = list()
+    for i in range(len(test_set)):
+        dist = abs(input_data - test_set[i][0])
+        distance_values.append([test_set[i], dist])
+    distance_values.sort(key=lambda tup: tup[1])
+    neighbours = list()
+
+    for i in range(k):
+        neighbours.append(distance_values[i])
+    return neighbours
+
+
+# Predict the class in which the data input lies
+def predict_classification(test_set, input_data, k):
+    neighbours = get_ranging_neighbours(test_set, input_data, k)
+    print(neighbours)
+    output_values = [row[0][-1] for row in neighbours]
+    prediction = max(set(output_values), key=output_values.count)
+
+    return prediction, neighbours
+
+
+# kNN Algorithm
+def k_nearest_neighbours(test_set, data, k):
+    predictions = list()
+    output,nn = predict_classification(test_set, data, k)
+    predictions.append(output)
+    return(predictions,nn)
+
+def get_knn_class_output(j):
+    k = 3      #as per specification
     # dist = 10**((ref - rssi) /10*N))
     # As of writing this we assuming N=2 and ref_rssi=-65
     N=2
     ref_rssi=-61
-    r1 = 10**( (ref_rssi - rssi1) / (10*N) )
-    r2 = 10**( (ref_rssi - rssi2) / (10*N) )
-    r3 = 10**( (ref_rssi - rssi3) / (10*N) )
-    r4 = 10**( (ref_rssi - rssi4) / (10*N) )
-    r5 = 10**( (ref_rssi - rssi5) / (10*N) )
-    r6 = 10**( (ref_rssi - rssi6) / (10*N) )
-    r7 = 10**( (ref_rssi - rssi7) / (10*N) )
-    r8 = 10**( (ref_rssi - rssi8) / (10*N) )
 
-    knn_mob = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
-
-    # location = do_least_squares_approximation(r1,r2,r3,r4)
-    # x0 = location[0][0]
-    # y0 = location[1][0]
-
-
-    # d_rssi = ([r1, r2, r3, r4])
-    # d_sensor = ([us1, us2, 0, 0])
-    # st_matrix = kalman_calc(d_sensor[0],d_sensor[1],d_rssi[0], d_rssi[1], d_rssi[2], d_rssi[3])
-    # print (st_matrix)
+    r1 = 10**( (ref_rssi - j[0][0]) / (10*N) )
+    r2 = 10**( (ref_rssi - j[1][0]) / (10*N) )
+    r3 = 10**( (ref_rssi - j[2][0]) / (10*N) )
+    r4 = 10**( (ref_rssi - j[3][0]) / (10*N) )
+    r5 = 10**( (ref_rssi - j[4][0]) / (10*N) )
+    r6 = 10**( (ref_rssi - j[5][0]) / (10*N) )
+    r7 = 10**( (ref_rssi - j[6][0]) / (10*N) )
+    r8 = 10**( (ref_rssi - j[7][0]) / (10*N) )
     
-    #knn predict
-    #if mobile_id == 1:
-    ## *************** for testing only *********************
-    ## *************** replace with j array values ***********************
-    #    knn_mob1 = knn.predict([[rssi1, rssi2, rssi3, rssi4, rssi5, rssi6, rssi7, rssi8]]) #rssi values from s
-    #else:    
-    ## *************** for testing only *********************
-    ## *************** replace with j array values ***********************
-    #    knn_mob2 = knn.predict([[1,2,3,4,4,5,6,7]]) #rssi values from s
-    return knn_mob
-
-j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
-j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],2]
+    print(r1, r2, r3, r4, r5, r6, r7,r8)
+    data = (r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8)/8
+    prediction,nn = k_nearest_neighbours(test_set, data, k)
+    knn_location = do_least_squares_approximation(nn[0][0][0],nn[1][0][0],nn[2][0][0])
+    return (prediction, knn_location)
 
 
-iteration = 0
 if __name__ == '__main__':
 
     multiprocessing.set_start_method('spawn')
     serial_queue = multiprocessing.Queue()
-    serial_process = multiprocessing.Process(target=read_serial_process, args=(serial_queue,))
-    serial_process.start()
+   # serial_process = multiprocessing.Process(target=read_serial_process, args=(serial_queue,))
+   # serial_process.start()
 
     j1 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],1]
     j2 = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],2]
 
     while True:
 
-        serial_inputs = []
+        serial_inputs = [1]
         while not serial_queue.empty():
             j = serial_queue.get() # remove and return an item from the queue.
             serial_inputs.append(j)
 
-<<<<<<< HEAD
-        for item in serial_inputs:
-            print(item)
-        
-=======
         # for item in serial_inputs:
         #     print(item)
 
->>>>>>> 317c499a605765aaf35d6b981f1b1adae06b4b9d
+        ##************* start testing only *************
+        rssi1 = -100*random.random()
+        rssi2 = -100*random.random()
+        rssi3 = -100*random.random()
+        rssi4 = -100*random.random()
+        rssi5 = -100*random.random()
+        rssi6 = -100*random.random()
+        rssi7 = -100*random.random()
+        rssi8 = -100*random.random()
+        
+        j[0][0] = rssi1
+        j[1][0] = rssi2
+        j[2][0] = rssi3
+        j[3][0] = rssi4
+        j[4][0] = rssi5
+        j[5][0] = rssi6
+        j[6][0] = rssi7
+        j[7][0] = rssi8
+        
+        if j[8] == 1:
+            j[8] = 2
+        else:
+            j[8] = 1
+           
+        ##************* end testing only *************
+
+
         if len(serial_inputs) > 0:
             #print(serial_inputs)
             if (j[8] == 1):
                 knn_mob1 = get_knn_output(j)
+            #    knn_mob1_class = get_knn_class_output(j)
             else: 
                 knn_mob2 = get_knn_output(j)
+           #     knn_mob2_class = get_knn_class_output(j)
 
-            #if (serial_inputs[-1][-1] == 1):
-            #  j1 = serial_inputs[-1]
-            #  j2 = serial_inputs[-2]
-            #else:
-            #  j2 = serial_inputs[-1]
-            #  j1 = serial_inputs[-2]
+        prediction, knn_mob_class = get_knn_class_output(j)
+        if prediction[0] == 1:
+           knn_mob1_class[0][0] = knn_mob_class[0][0]
+           knn_mob1_class[0][1] = knn_mob_class[1][0]
+           print(knn_mob1_class)
+        else:
+           knn_mob2_class[0][0] = knn_mob_class[0][0]
+           knn_mob2_class[0][1] = knn_mob_class[1][0]
+        
+        print(prediction)
+        print(knn_mob_class)
 
-<<<<<<< HEAD
-        # print(j1)
-        # print(j2)
-        knn_mob1 = get_knn_output(j1);
-        knn_mob2 = get_knn_output(j2);
-=======
-
-       # print(j1)
-       # print(j2)
-       # knn_mob1 = get_knn_output(j1);
-       # knn_mob2 = get_knn_output(j2);
->>>>>>> 317c499a605765aaf35d6b981f1b1adae06b4b9d
-
-
-        print(iteration)
-        iteration += 1
-        print(knn_mob1[0][0], knn_mob1[0][1])
-        print(knn_mob2[0][0], knn_mob2[0][1])
         if show_gui:
               sc.set_offsets(np.c_[knn_mob1[0][0],knn_mob1[0][1]])
               sc1.set_offsets(np.c_[knn_mob2[0][0],knn_mob2[0][1]])
+              sc2.set_offsets(np.c_[knn_mob1_class[0][0],knn_mob1_class[0][1]])
+              sc3.set_offsets(np.c_[knn_mob2_class[0][0],knn_mob2_class[0][1]])
 
               fig.canvas.draw_idle()
               plt.pause(0.01)
@@ -502,12 +547,7 @@ if __name__ == '__main__':
         # print('data received: ')
         # print(variables, values)
 
-<<<<<<< HEAD
-        time.sleep(1)
-=======
-
-
         time.sleep(0.1)
->>>>>>> 317c499a605765aaf35d6b981f1b1adae06b4b9d
+
 
     serial_process.join()
